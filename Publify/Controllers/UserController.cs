@@ -12,17 +12,17 @@ namespace Publify.Controllers
     [Route("[controller]")]
     [ApiController]
 
-    public class TeacherController : ControllerBase
+    public class UserController : ControllerBase
     {
         readonly IDalService _DalService;
 
-        public TeacherController(IDalService dalService)
+        public UserController(IDalService dalService)
         {
             _DalService = dalService;
         }
 
         [HttpPost("Create")]
-        public async Task<TeacherModel> PostAsync()
+        public async Task<UserModel> PostAsync()
         {
             var response = await _DalService.CreateAsync();
             
@@ -30,7 +30,7 @@ namespace Publify.Controllers
         }
 
         [HttpGet]
-        public async Task<TeacherModel> GetByAsync(string publicKey)
+        public async Task<UserModel> GetByAsync(string publicKey)
         {
             var result = await _DalService.GetByAsync(publicKey);
 
@@ -44,7 +44,7 @@ namespace Publify.Controllers
 
 
         [HttpGet("All")]
-        public async Task<List<TeacherModel>> GetAllBy()
+        public async Task<List<UserModel>> GetAllBy()
         {
             var result = await _DalService.GetAllByAsync();
 
@@ -52,7 +52,7 @@ namespace Publify.Controllers
         }
 
         [HttpPut]
-        public async Task<TeacherModel> UpdateAsync(string publicKey)
+        public async Task<UserModel> UpdateAsync(string publicKey)
         {
             var response = await _DalService.UpdateAsync(publicKey);
 

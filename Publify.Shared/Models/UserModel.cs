@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿namespace Publify.Shared.Models;
 
-namespace Publify.Shared.Models;
-
-public class TeacherModel 
+public class UserModel 
 {
     public string Id { get; set; } = string.Empty;
 

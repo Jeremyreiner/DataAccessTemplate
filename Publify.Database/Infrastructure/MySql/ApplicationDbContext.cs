@@ -13,13 +13,13 @@ namespace Publify.Database.Infrastructure.MySql
             //Database.EnsureCreated();
         }
 
-        public DbSet<TeacherEntity> Teachers { get; set; } = null!;
+        public DbSet<UserEntity> Teachers { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             for (var i = 0; i < 10; i++)
             {
-                var teacher = new TeacherEntity
+                var teacher = new UserEntity
                 {
                     PrivateId = Guid.NewGuid(),
                     PublicId = Guid.NewGuid(),
@@ -29,7 +29,7 @@ namespace Publify.Database.Infrastructure.MySql
                     Password = "qwerty".Hash()
                 };
 
-                modelBuilder.Entity<TeacherEntity>().HasData(teacher);
+                modelBuilder.Entity<UserEntity>().HasData(teacher);
             }
         }
     }

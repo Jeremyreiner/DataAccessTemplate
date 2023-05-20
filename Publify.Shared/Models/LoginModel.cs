@@ -9,7 +9,7 @@
 
     public class ChangePasswordModel : LoginModel
     {
-        public string OriginalPassword { get; set; }= string.Empty;
+        public string ConfirmedPassword { get; set; } = string.Empty;
         public string NewPassword { get; set; } = string.Empty;
     }
 }

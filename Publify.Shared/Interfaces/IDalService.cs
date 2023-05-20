@@ -8,13 +8,13 @@ namespace Publify.Shared.Interfaces
     {
         #region Create
 
-        Task<Result<TeacherEntity>> CreateAsync();
+        Task<Result<UserEntity>> CreateAsync();
 
         #endregion
 
         #region Update
 
-        Task<Result<TeacherEntity>> UpdateAsync(string publicKey);
+        Task<Result<UserEntity>> UpdateAsync(string publicKey);
 
         #endregion
 
@@ -26,13 +26,13 @@ namespace Publify.Shared.Interfaces
 
         #region GetBy
 
-        Task<Result<TeacherEntity>> GetByAsync(string email);
+        Task<Result<UserEntity>> GetByAsync(string email);
 
         #endregion
 
         #region Get AllBy
 
-        Task<List<TeacherEntity>> GetAllByAsync();
+        Task<List<UserEntity>> GetAllByAsync();
 
 
         #endregion

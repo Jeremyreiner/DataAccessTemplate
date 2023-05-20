@@ -9,23 +9,23 @@ namespace Publify.Shared.Services
 {
     public class DalService : IDalService
     {
-        readonly ITeacherRepository _TeacherRepository;
+        readonly IUserRepository _UserRepository;
 
         readonly ILogger<DalService> _Logger;
 
         public DalService(
-            ITeacherRepository teacherRepository,
+            IUserRepository userRepository,
             ILogger<DalService> logger)
         {
-            _TeacherRepository = teacherRepository;
-
+            _UserRepository = userRepository;
+            _Logger = logger;
         }
 
         #region CREATE ENTITY
 
-        public async Task<Result<TeacherEntity>> CreateAsync()
+        public async Task<Result<UserEntity>> CreateAsync()
         {
-            TeacherEntity teacher = new()
+            UserEntity teacher = new()
             {
                 PrivateId = Guid.NewGuid(),
                 PublicId = Guid.NewGuid(),
@@ -33,7 +33,7 @@ namespace Publify.Shared.Services
                 LastName = Faker.Name.Last(),
                 Bio = Faker.Lorem.Paragraph(),
                 Email = Faker.Internet.Email(),
-                Password = "qwerty",
+                Password = "qwerty".Hash(),
                 CreatedOnDt = DateTime.Now
             };
 
@@ -47,7 +47,7 @@ namespace Publify.Shared.Services
                     .DuplicatedEntry();
             }
 
-            result = await _TeacherRepository.AddAsync(teacher);
+            result = await _UserRepository.AddAsync(teacher);
 
             return result;
         }
@@ -56,7 +56,7 @@ namespace Publify.Shared.Services
 
         #region UPDATE ENTITY
 
-        public async Task<Result<TeacherEntity>> UpdateAsync(string publicKey)
+        public async Task<Result<UserEntity>> UpdateAsync(string publicKey)
         {
             var result = await GetByAsync(publicKey);
 
@@ -74,7 +74,7 @@ namespace Publify.Shared.Services
             user.Bio = Faker.Lorem.Paragraph();
             user.LastUpdateOnDt = DateTime.Now;
 
-            return await _TeacherRepository.UpdateAsync(user);
+            return await _UserRepository.UpdateAsync(user);
         }
 
         #endregion
@@ -88,7 +88,7 @@ namespace Publify.Shared.Services
 
             if (result.IsSuccess)
             {
-                return await _TeacherRepository.DeleteAsync(result.Value);
+                return await _UserRepository.DeleteAsync(result.Value);
             }
 
             _Logger.LogTrace(result
@@ -103,9 +103,9 @@ namespace Publify.Shared.Services
 
         #region GetBy
 
-        public async Task<Result<TeacherEntity>> GetByAsync(string publicKey)
+        public async Task<Result<UserEntity>> GetByAsync(string publicKey)
         {
-            var result = await _TeacherRepository.GetByAsync(publicKey, u => u.PublicId == Guid.Parse(publicKey));
+            var result = await _UserRepository.GetByAsync(publicKey, u => u.PublicId == Guid.Parse(publicKey));
 
             return result;
         }
@@ -114,9 +114,9 @@ namespace Publify.Shared.Services
 
         #region GetAllBy
 
-        public async Task<List<TeacherEntity>> GetAllByAsync()
+        public async Task<List<UserEntity>> GetAllByAsync()
         {
-            var result = await _TeacherRepository.GetListByAsync();
+            var result = await _UserRepository.GetListByAsync();
 
             if (!result.IsSuccess)
             {
@@ -136,7 +136,7 @@ namespace Publify.Shared.Services
         //{
         //    try
         //    {
-        //        var result = await _TeacherRepository.GetByAsync(email);
+        //        var result = await _UserRepository.GetByAsync(email);
 
         //        if (result.IsSuccess)
         //        {
@@ -159,7 +159,7 @@ namespace Publify.Shared.Services
 
         //public async Task<(User?, bool)?> LoginWithToken(string email)
         //{
-        //    var result = await _TeacherRepository.GetByAsync(email);
+        //    var result = await _UserRepository.GetByAsync(email);
 
         //    if (!result.IsSuccess) throw new Exception();
 

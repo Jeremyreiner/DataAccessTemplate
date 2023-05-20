@@ -10,34 +10,34 @@ using Publify.Shared.Results;
 
 namespace Publify.Database.Repositories
 {
-    public class TeacherRepository : ITeacherRepository
+    public class UserRepository : IUserRepository
     {
         readonly ApplicationDbContext _DbContext;
 
-        public TeacherRepository(ApplicationDbContext dbContext)
+        public UserRepository(ApplicationDbContext dbContext)
         {
             _DbContext = dbContext;
         }
 
-        public async Task<Result<TeacherEntity>> AddAsync(TeacherEntity teacher)
+        public async Task<Result<UserEntity>> AddAsync(UserEntity teacher)
         {
             await _DbContext.Teachers.AddAsync(teacher);
 
             await _DbContext.SaveChangesAsync();
 
-            return Result<TeacherEntity>.Success(teacher);
+            return Result<UserEntity>.Success(teacher);
         }
 
-        public async Task<Result<TeacherEntity>> UpdateAsync(TeacherEntity teacher)
+        public async Task<Result<UserEntity>> UpdateAsync(UserEntity teacher)
         {
             _DbContext.Teachers.Update(teacher);
 
             await _DbContext.SaveChangesAsync();
 
-            return Result<TeacherEntity>.Success(teacher);
+            return Result<UserEntity>.Success(teacher);
         }
 
-        public async Task<Result<HttpStatusCode>> DeleteAsync(TeacherEntity teacher)
+        public async Task<Result<HttpStatusCode>> DeleteAsync(UserEntity teacher)
         {
             _DbContext.Teachers.Remove(teacher);
 
@@ -46,25 +46,25 @@ namespace Publify.Database.Repositories
             return Result<HttpStatusCode>.Deleted();
         }
 
-        public async Task<Result<TeacherEntity>> GetByAsync(string publicKey, Expression<Func<TeacherEntity, bool>> predicate)
+        public async Task<Result<UserEntity>> GetByAsync(string publicKey, Expression<Func<UserEntity, bool>> predicate)
         {
             var teacher = await _DbContext
                 .Teachers
                 .FirstOrDefaultAsync(predicate);
 
             return teacher is not null 
-                ? Result<TeacherEntity>.Success(teacher) 
-                : Result<TeacherEntity>.Failed(new Error(new Records.PublicId(Guid.Parse(publicKey))
+                ? Result<UserEntity>.Success(teacher) 
+                : Result<UserEntity>.Failed(new Error(new Records.PublicId(Guid.Parse(publicKey))
                     .NotFound()));
         }
         
-        public async Task<Result<List<TeacherEntity>>> GetListByAsync()
+        public async Task<Result<List<UserEntity>>> GetListByAsync()
         {
             var teachers = await _DbContext.Teachers.ToListAsync();
 
             return teachers.Any()
-                ? Result<List<TeacherEntity>>.Success(teachers) 
-                : Result<List<TeacherEntity>>.Failed(new Error());
+                ? Result<List<UserEntity>>.Success(teachers) 
+                : Result<List<UserEntity>>.Failed(new Error());
         }
 
 

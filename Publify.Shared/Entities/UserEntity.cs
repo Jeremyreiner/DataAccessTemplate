@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Publify.Shared.Entities
 {
     [Table("Teachers")]
-    public class TeacherEntity
+    public class UserEntity
     {
 
         [Key]

@@ -5,7 +5,7 @@ namespace Publify.Shared.Extensions
 {
     public static class EntityToModelExtension
     {
-        public static TeacherModel ToModel(this TeacherEntity entity) =>
+        public static UserModel ToModel(this UserEntity entity) =>
             new()
             {
                 Id = entity.PublicId.ToString(),
@@ -17,7 +17,7 @@ namespace Publify.Shared.Extensions
                 LastUpdateOnDt = entity.LastUpdateOnDt
             };
 
-        public static List<TeacherModel> ToModelList(this IEnumerable<TeacherEntity> list) =>
+        public static List<UserModel> ToModelList(this IEnumerable<UserEntity> list) =>
             list
                 .Select(entity => entity
                 .ToModel())

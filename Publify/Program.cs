@@ -3,7 +3,6 @@ using Publify.Database.Infrastructure.MySql;
 using Publify.Database.Repositories;
 using Publify.Shared.Interfaces;
 using Serilog;
-using System.Diagnostics;
 using Microsoft.OpenApi.Models;
 using Publify.Services;
 using Publify.Shared.Services;
@@ -28,37 +27,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<MainService>();
 
 builder.Services.AddScoped<IDalService, DalService>();
-builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 //Swagger Auth
-builder.Services.AddSwaggerGen(c =>
-{
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        In = ParameterLocation.Header,
-        Description = "Please insert JWT with Bearer into field",
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey
-    });
-
-    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename), true);
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-{
-    {
-        new OpenApiSecurityScheme
-        {
-            Reference = new OpenApiReference
-            {
-                Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
-            }
-        },
-        new string[] { }
-    }
-});
-});
+builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<SwaggerUIOptions>(options =>
 {
@@ -76,8 +48,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 var app = builder.Build();
 
-//ApplicationDbContext on startup
+//AppDbContext on startup
 var scope = app.Services.CreateScope();
+
 scope.ServiceProvider.GetService<ApplicationDbContext>();
 
 // Configure the HTTP request pipeline.

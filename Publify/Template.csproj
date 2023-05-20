@@ -79,8 +79,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Publify.Database\Publify.Database.csproj" />
-    <ProjectReference Include="..\Publify.Shared\Publify.Shared.csproj" />
+    <ProjectReference Include="..\Publify.Database\Template.Database.csproj" />
+    <ProjectReference Include="..\Publify.Shared\Template.Shared.csproj" />
   </ItemGroup>
 
 </Project>

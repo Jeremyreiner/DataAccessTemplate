@@ -5,7 +5,7 @@ namespace Publify.Shared.Extensions
 {
     public static class ModelToEntityExtensions
     {
-        public static TeacherEntity ToEntity(this TeacherModel model) =>
+        public static UserEntity ToEntity(this UserModel model) =>
             new()
             {
                 PublicId = Guid.Parse(model.Id),

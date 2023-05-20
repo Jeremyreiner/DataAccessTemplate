@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Publify.Shared\Publify.Shared.csproj" />
+    <ProjectReference Include="..\Publify.Shared\Template.Shared.csproj" />
   </ItemGroup>
 
 </Project>
