@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Publify.Shared.Entities
+namespace Template.Shared.Entities
 {
     [Table("Teachers")]
     public class UserEntity
@@ -31,6 +31,5 @@ namespace Publify.Shared.Entities
 
         [NotMapped] 
         public Records.Records.PublicId PublicRecord => new(PublicId);
-
     }
 }

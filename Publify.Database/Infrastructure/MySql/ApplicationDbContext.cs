@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Publify.Shared.Entities;
 using Publify.Shared.Services;
+using Template.Shared.Entities;
 
-namespace Publify.Database.Infrastructure.MySql
+namespace Template.Database.Infrastructure.MySql
 {
     public class ApplicationDbContext : DbContext
     {

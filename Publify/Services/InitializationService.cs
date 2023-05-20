@@ -1,4 +1,4 @@
-﻿namespace Publify.Services
+﻿namespace Template.Services
 {
     public class InitializationService : IHostedService
     {

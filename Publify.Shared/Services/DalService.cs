@@ -1,11 +1,13 @@
 ﻿using System.Net;
 using Microsoft.Extensions.Logging;
-using Publify.Shared.Entities;
-using Publify.Shared.Extensions;
-using Publify.Shared.Interfaces;
-using Publify.Shared.Results;
+using Publify.Shared.Services;
+using Template.Shared.Entities;
+using Template.Shared.Exceptions;
+using Template.Shared.Extensions;
+using Template.Shared.Interfaces;
+using Template.Shared.Results;
 
-namespace Publify.Shared.Services
+namespace Template.Shared.Services
 {
     public class DalService : IDalService
     {
@@ -25,7 +27,7 @@ namespace Publify.Shared.Services
 
         public async Task<Result<UserEntity>> CreateAsync()
         {
-            UserEntity teacher = new()
+            UserEntity user = new()
             {
                 PrivateId = Guid.NewGuid(),
                 PublicId = Guid.NewGuid(),
@@ -37,7 +39,7 @@ namespace Publify.Shared.Services
                 CreatedOnDt = DateTime.Now
             };
 
-            var result = await GetByAsync(teacher.PublicId.ToString());
+            var result = await GetByAsync(user.PublicId.ToString());
 
             if (result.IsSuccess)
             {
@@ -47,9 +49,7 @@ namespace Publify.Shared.Services
                     .DuplicatedEntry();
             }
 
-            result = await _UserRepository.AddAsync(teacher);
-
-            return result;
+            return await _UserRepository.AddAsync(user);
         }
 
         #endregion
@@ -64,7 +64,7 @@ namespace Publify.Shared.Services
             {
                 throw result
                     .Error
-                    .NotFound;
+                    .InvalidConversion;
             }
 
             var user = result.Value;
@@ -105,9 +105,15 @@ namespace Publify.Shared.Services
 
         public async Task<Result<UserEntity>> GetByAsync(string publicKey)
         {
-            var result = await _UserRepository.GetByAsync(publicKey, u => u.PublicId == Guid.Parse(publicKey));
+            var valid = ValidateGuid(publicKey);
 
-            return result;
+            if (!valid.IsSuccess)
+            {
+                return Result<UserEntity>
+                    .Failed(new Error(valid.Error.InvalidConversion));
+            }
+
+            return await _UserRepository.GetByAsync(publicKey, u => u.PublicId == valid.Value);
         }
 
         #endregion
@@ -132,51 +138,40 @@ namespace Publify.Shared.Services
 
         #region AUTHENTICATION
 
-        //public async Task<(bool, User?)> Login(string email, string password)
-        //{
-        //    try
-        //    {
-        //        var result = await _UserRepository.GetByAsync(email);
+        public async Task<Result<UserEntity>> Login(string email, string password)
+        {
+            var result = await _UserRepository.GetByAsync(email, u => u.Email == email);
 
-        //        if (result.IsSuccess)
-        //        {
-        //            var teacher = result.Value;
+            if (!result.IsSuccess)
+            {
+                return Result<UserEntity>
+                    .Failed(result.Error);
+            }
 
-        //            return (password.VerifyHash(teacher.Password), teacher);
-        //        }
+            var verified = password.VerifyHash(result.Value.Password);
 
-        //        var student = await _StudentRepository.GetByAsync(s => s.Email == email);
-
-        //        return (student is not null && password.VerifyHash(student.Password), student!);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine(e);
-        //        throw;
-        //    }
-
-        //}
-
-        //public async Task<(User?, bool)?> LoginWithToken(string email)
-        //{
-        //    var result = await _UserRepository.GetByAsync(email);
-
-        //    if (!result.IsSuccess) throw new Exception();
-
-        //    var teacher = result.Value;
-
-        //    return (teacher, true);
-
-        //}
+            return verified 
+                ? result 
+                : Result<UserEntity>.Failed(result.Error);
+        }
 
         #endregion
 
         #region Private Methods
 
-        //private bool ValidateGuid(string key)
-        //{
-        //    var valid = Guid.TryParse(key);
-        //}
+        private static Result<Guid> ValidateGuid(string key)
+        {
+            var valid = Guid.TryParse(key, out var guid);
+
+            if (valid)
+            {
+                return Result<Guid>.Success(guid);
+            }
+
+            return Result<Guid>
+                .Failed(new Error(new Records.Records.GuidId(key).ConversionError()));
+        }
+
         #endregion
     }
 }

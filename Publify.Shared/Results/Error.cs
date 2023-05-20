@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using Publify.Shared.Exceptions;
+using Template.Shared.Exceptions;
 
-namespace Publify.Shared.Results
+namespace Template.Shared.Results
 {
     public class Error
     {
@@ -17,6 +18,8 @@ namespace Publify.Shared.Results
 
         public NotImplementedException NotImplemented { get; set; }
 
+        public GuidException InvalidConversion { get; set; }
+
         public HttpStatusCode Code { get; set; }
 
         public static readonly Error None = new();
@@ -27,6 +30,12 @@ namespace Publify.Shared.Results
         {
             _Message = message;
             Code = HttpStatusCode.OK;
+        }
+
+        public Error(GuidException invalid) : this()
+        {
+            InvalidConversion = invalid;
+            Code = HttpStatusCode.BadRequest;
         }
 
         public Error(NotFoundException notFound) : this()

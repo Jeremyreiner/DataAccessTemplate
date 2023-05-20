@@ -1,6 +1,7 @@
 ﻿using Publify.Shared.Exceptions;
+using Template.Shared.Exceptions;
 
-namespace Publify.Shared.Extensions
+namespace Template.Shared.Extensions
 {
     public static class ExceptionExtensions
     {
@@ -12,5 +13,8 @@ namespace Publify.Shared.Extensions
 
         public static NotImplementedException NotImplemented(this Records.Records.PublicId publicId) =>
             new($"UnRegistered Implementation For ID - {publicId}");
+
+        public static GuidException ConversionError(this Records.Records.GuidId guidId) =>
+            new($"Cannot convert string to guid - {guidId}");
     }
 }

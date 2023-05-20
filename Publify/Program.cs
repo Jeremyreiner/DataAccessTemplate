@@ -1,13 +1,12 @@
 using Microsoft.EntityFrameworkCore;
-using Publify.Database.Infrastructure.MySql;
-using Publify.Database.Repositories;
-using Publify.Shared.Interfaces;
+using Template.Shared.Interfaces;
 using Serilog;
-using Microsoft.OpenApi.Models;
-using Publify.Services;
-using Publify.Shared.Services;
-using System.Reflection;
+using Template.Services;
+using Template.Shared.Services;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using Template.Database.Infrastructure.MySql;
+using Template.Database.Repositories;
+using Template.Shared.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +25,7 @@ builder.Services.AddSwaggerGen();
 //Services
 builder.Services.AddSingleton<MainService>();
 
+//Data Access Services
 builder.Services.AddScoped<IDalService, DalService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 

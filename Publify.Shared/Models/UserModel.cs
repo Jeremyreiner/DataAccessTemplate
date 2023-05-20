@@ -1,4 +1,4 @@
-﻿namespace Publify.Shared.Models;
+﻿namespace Template.Shared.Models;
 
 public class UserModel 
 {

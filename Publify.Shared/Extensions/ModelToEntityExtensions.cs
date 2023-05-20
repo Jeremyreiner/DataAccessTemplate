@@ -1,7 +1,7 @@
-﻿using Publify.Shared.Entities;
-using Publify.Shared.Models;
+﻿using Template.Shared.Models;
+using Template.Shared.Entities;
 
-namespace Publify.Shared.Extensions
+namespace Template.Shared.Extensions
 {
     public static class ModelToEntityExtensions
     {

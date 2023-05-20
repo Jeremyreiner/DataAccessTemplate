@@ -1,13 +1,11 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using Publify.Shared.Entities;
-using Publify.Shared.Enums;
-using Publify.Shared.Extensions;
-using Publify.Shared.Interfaces;
-using Publify.Shared.Models;
-using Publify.Shared.Results;
+using Template.Shared.Extensions;
+using Template.Shared.Interfaces;
+using Template.Shared.Models;
+using Template.Shared.Extensions;
 
-namespace Publify.Controllers
+namespace Template.Controllers
 {
     [Route("[controller]")]
     [ApiController]
@@ -27,6 +25,20 @@ namespace Publify.Controllers
             var response = await _DalService.CreateAsync();
             
             return response.Value.ToModel();
+        }
+
+        [HttpPost("LogIn")]
+        public async Task<UserModel> Login(string email, string password)
+        {
+            var response = await _DalService.Login(email, password);
+
+            if (response.IsSuccess)
+            {
+                return response.Value.ToModel();
+            }
+
+            throw response.Error.NotFound;
+
         }
 
         [HttpGet]

@@ -1,9 +1,9 @@
 ﻿using System.Linq.Expressions;
 using System.Net;
-using Publify.Shared.Entities;
-using Publify.Shared.Results;
+using Template.Shared.Entities;
+using Template.Shared.Results;
 
-namespace Publify.Shared.Interfaces
+namespace Template.Shared.Interfaces
 {
     public interface IUserRepository
     {

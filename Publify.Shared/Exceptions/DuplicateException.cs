@@ -1,4 +1,4 @@
-﻿namespace Publify.Shared.Exceptions
+﻿namespace Template.Shared.Exceptions
 {
     public class DuplicateException : Exception
     {

@@ -1,14 +1,14 @@
 ﻿using System.Linq.Expressions;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
-using Publify.Database.Infrastructure.MySql;
-using Publify.Shared.Entities;
-using Publify.Shared.Extensions;
-using Publify.Shared.Interfaces;
-using Publify.Shared.Records;
-using Publify.Shared.Results;
+using Template.Shared.Interfaces;
+using Template.Shared.Records;
+using Template.Shared.Results;
+using Template.Database.Infrastructure.MySql;
+using Template.Shared.Entities;
+using Template.Shared.Extensions;
 
-namespace Publify.Database.Repositories
+namespace Template.Database.Repositories
 {
     public class UserRepository : IUserRepository
     {
