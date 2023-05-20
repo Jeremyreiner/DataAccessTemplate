@@ -24,31 +24,11 @@ builder.Services.AddHostedService<InitializationService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var exeFolderPath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule!.FileName);
-
-var configFilePath = Path.Combine(exeFolderPath!, "appsettings.json");
-
-var config = builder.Configuration
-    .AddJsonFile(configFilePath, optional: true, reloadOnChange: true)
-    .Build();
-
 //Services
 builder.Services.AddSingleton<MainService>();
 
 builder.Services.AddScoped<IDalService, DalService>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
-
-//Cors
-string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: myAllowSpecificOrigins,
-        builder =>
-        {
-            builder.WithOrigins("http://localhost", "ionic://localhost", "capacitor://localhost", "https://localhost").AllowAnyMethod().AllowAnyHeader();
-        });
-});
 
 //Swagger Auth
 builder.Services.AddSwaggerGen(c =>
@@ -60,7 +40,7 @@ builder.Services.AddSwaggerGen(c =>
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey
     });
-    
+
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename), true);
 
@@ -101,16 +81,15 @@ var scope = app.Services.CreateScope();
 scope.ServiceProvider.GetService<ApplicationDbContext>();
 
 // Configure the HTTP request pipeline.
-// if (app.Environment.IsDevelopment())
-// {
-    app.UseSwagger();
-app.UseSwaggerUI(options =>
+if (app.Environment.IsDevelopment())
 {
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-});
-// }
+    app.UseSwagger();
 
-app.UseCors(myAllowSpecificOrigins);
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+    });
+}
 
 app.UseRouting();
 
