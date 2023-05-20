@@ -8,8 +8,6 @@ using Microsoft.OpenApi.Models;
 using Publify.Services;
 using Publify.Shared.Services;
 using System.Reflection;
-using Publify.StripeAPI.Interfaces;
-using Publify.StripeAPI.Services;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,14 +37,6 @@ builder.Services.AddSingleton<MainService>();
 
 builder.Services.AddScoped<IDalService, DalService>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
-
-
-//stripe services
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
-builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 
 //Cors
 string myAllowSpecificOrigins = "_myAllowSpecificOrigins";

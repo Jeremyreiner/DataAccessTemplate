@@ -1,1 +1,0 @@
-export * from './add-bio-dialog.component';

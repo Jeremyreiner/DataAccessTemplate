@@ -18,8 +18,4 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Publify.StripeAPI\Publify.StripeAPI.csproj" />
-  </ItemGroup>
-
 </Project>

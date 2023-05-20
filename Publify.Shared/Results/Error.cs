@@ -7,7 +7,7 @@ namespace Publify.Shared.Results
     {
         private readonly Random _Random = new();
 
-        private string GetQuote() => "\n" + _Chicken[_Random.Next(_Chicken.Count)] + "\n";
+        private string GetQuote() => "\n" + _Chicken[_Random.Next(_Chicken.Count)] + ".\n";
 
         private string _Message;
 
@@ -78,10 +78,14 @@ namespace Publify.Shared.Results
             "Boorsha 911, two thousand and tweeelve",
             "His palms are sweaty, there's vommit on his sweata already\nMoms spaggetti",
             $"Note From Future Self\nIf you are reading this, and it is\n{DateTime.Now.Day} {DateTime.Now.Month} {DateTime.Now.Year} and roughly {DateTime.Now.Hour} : {DateTime.Now.Minute}.\nDon't drink the coffee... Its been poisoned!!\nAwait Further Results",
-            "Better to be a warrier in a garden, than a gardener in a war",
+            "Better to be a warrior in a garden, than a gardener in a war",
             "In prison, your better to be the fucker, than fucked",
             "To friendship to honor. If you cant come in her, come on her",
-            "I am americas number wahhaad dush"
+            "I am americas number wahhaad dush",
+            "The greatest victory is that which requires no battle",
+            "Victoriorus warriors win first, then go to war, while defeated warriors go to war first then seek to win",
+            "In the midst of chaos there is also oportunity",
+            "Who that wishes to fight, must first count the cost"
         };
     }
 }

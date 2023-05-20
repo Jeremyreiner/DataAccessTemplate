@@ -81,7 +81,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Publify.Database\Publify.Database.csproj" />
     <ProjectReference Include="..\Publify.Shared\Publify.Shared.csproj" />
-    <ProjectReference Include="..\Publify.StripeAPI\Publify.StripeAPI.csproj" />
   </ItemGroup>
 
 </Project>
