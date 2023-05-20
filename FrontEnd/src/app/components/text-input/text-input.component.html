@@ -1,0 +1,29 @@
+<div class="input-primary !py-0 h-11">
+  <label
+    (focusin)="isFocused = true"
+    (focusout)="isFocused = false"
+    [for]="inputId"
+    class="cursor-text flex flex-col justify-center w-full h-full"
+    [class]="inputValue || isFocused ? 'justify-between' : 'justify-center'"
+  >
+    <span
+      *ngIf="inputValue || isFocused"
+      class="cursor-text type-secondary text-[10px] mt-1"
+    >
+      {{ label }}
+    </span>
+    <input
+      [id]="inputId"
+      [class]="inputValue || isFocused ? 'mb-1' : ''"
+      [name]="inputId"
+      (ngModelChange)="onInput($event)"
+      [type]="type"
+      type="text"
+      style="width: inherit"
+      [maxlength]="maxlength"
+      class="cursor-text text-sm bg-transparent border-none focus:ring-0 focus:outline-0"
+      [(ngModel)]="inputValue"
+      [placeholder]="inputValue || isFocused ? placeholder?placeholder:'' : label"
+    />
+  </label>
+</div>

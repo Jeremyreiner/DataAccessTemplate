@@ -1,0 +1,12 @@
+<div class="h-full w-full relative">
+  <div class="y-axis">
+    <a class="text-center text-gray-400" *ngFor="let tick of ticks">{{tick}}</a>
+    <a class="text-center text-gray-400">0</a>
+  </div>
+  <div class="x-axis">
+    <div *ngFor="let value of data" class="relative rounded-sm bg-gray-100 overflow-hidden w-[70%] ml-[15%]">
+      <div class="bg-blue-500 w-full absolute bottom-0" [style.height.%]="calcHeight(value)"></div>
+    </div>
+    <a class="text-center text-gray-400" *ngFor="let month of months">{{month}}</a>
+  </div>
+</div>

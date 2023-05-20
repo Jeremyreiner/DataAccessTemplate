@@ -1,0 +1,36 @@
+version: 0.0
+os: linux
+files:
+  - source: build-output/frontend
+    destination: /var/www/html/InfluxDbUI
+  - source: build-output/backend/linux-x64
+    destination: /home/ubuntu/backend
+  - source: build-output/pdf-to-jpeg
+    destination: /home/ubuntu/pdf-to-jpeg
+hooks:
+  ApplicationStop:
+    - location: scripts/delete-old.sh
+      mode: '0755' 
+      timeout: 1000
+      runas: root
+  BeforeInstall:
+    - location: scripts/delete-old.sh
+      mode: '0755' 
+      timeout: 300
+      runas: root
+  ApplicationStart:
+    - location: scripts/start-up.sh
+      mode: '0755'
+      timeout: 300
+      runas: root
+      
+      
+      
+     
+
+
+
+
+
+
+

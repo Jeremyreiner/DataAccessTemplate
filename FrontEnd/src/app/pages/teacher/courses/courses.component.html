@@ -1,0 +1,78 @@
+<section *ngIf="user.isVerified"  class="card-section">
+  <div class="relative w-full h-full bg-indigo-50 overflow-y-auto" (scroll)="handleScroll($event)">
+    <ng-container>
+      <div *ngIf="!isLoading" class="relative">
+        <div class="duration-150 sticky mb-8 z-20" [class]="isScrolled ? 'px-0 top-0' : 'px-8 top-8'"
+        >
+          <header
+            *ngIf="course"
+            class="duration-150 flex justify-between sticky top-0 z-10 p-4 md:p-8 bg-indigo-100"
+            [class]="isScrolled ? 'md:p-4 items-center' : 'items-start md:p-8 rounded-xl'"
+          >
+            <div class="block w-2/3">
+              <div class="flex items-center gap-2 mb-1">
+                <h2
+                  class="flex items-center gap-2 truncate text-xl md:text-2xl font-bold type-primary capitalize whitespace-nowrap"
+                  [class]="isScrolled ? 'text-lg md:text-xl' : 'text-2xl xl:text-3xl'"
+                >
+                  <button
+                    (click)="goBack()" class="flex items-center justify-center duration-150 text-indigo-400
+                    hover:text-indigo-600">
+                    <mat-icon>arrow_back</mat-icon>
+                  </button>
+                  {{ course.title }}
+                </h2>
+                <button
+                  *ngIf="user.isTeacher"
+                  [matMenuTriggerFor]="settingsMenu"
+                  matTooltip="Settings"
+                  matTooltipPosition="after"
+                  class="flex items-center justify-center text-indigo-400 hover:text-indigo-600 active:text-indigo-800">
+                  <mat-icon>settings</mat-icon>
+                </button>
+                <mat-menu
+                  #settingsMenu
+                  class="!w-44 !shadow-none border-primary"
+                >
+                  <button
+                    (click)="openConfirmDeleteDialog(course)"
+                    mat-menu-item
+                    disableRipple
+                    class="!w-44 !flex !items-center !justify-between"
+                  >
+                    Delete Course
+                    <mat-icon class="!text-inherit !mr-0">delete</mat-icon>
+                  </button>
+                </mat-menu>
+              </div>
+              <h5 class="type-secondary">{{ course.courseId }}</h5>
+            </div>
+            <button *ngIf="user.isTeacher" class="btn-primary" (click)="openUploadBookDialog()">
+              <mat-icon>cloud_upload</mat-icon>
+              <span class="hidden md:block">Upload File</span>
+            </button>
+          </header>
+        </div>
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 flex-wrap p-8 pb-32 bg-indigo-50">
+          <app-book
+            *ngFor="let book of books"
+            [book]="book"
+            (deleted)="deleteBook(book)"
+          ></app-book>
+        </div>
+      </div>
+      <div *ngIf="!books?.length && !isLoading && course"
+           class="!absolute !inset-0 flex items-center justify-center type-tertiary text-2xl p-8 text-center">
+        This course does not have any published content.
+      </div>
+      <div *ngIf="!course && !isLoading"
+           class="!absolute !inset-0 flex items-center justify-center type-tertiary text-2xl p-8 text-center">
+        You do not have any courses.
+      </div>
+      <div *ngIf="isLoading" class="absolute inset-0 flex justify-center h-full items-center z-10 px-8">
+        <mat-spinner color="primary" strokeWidth="2" diameter="48"></mat-spinner>
+      </div>
+    </ng-container>
+  </div>
+</section>

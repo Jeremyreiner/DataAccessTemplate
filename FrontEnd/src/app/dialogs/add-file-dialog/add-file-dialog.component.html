@@ -1,0 +1,28 @@
+<div class="relative">
+  <app-close-dialog-button class="absolute top-0 right-0" (click)="closeDialog()"></app-close-dialog-button>
+  <header class="mb-4">
+    <h2 class="type-primary font-bold text-xl">Upload File</h2>
+    <p class="type-secondary text-sm">Submit PDFs to be viewed by subscribers.</p>
+  </header>
+  <ngx-dropzone (change)="onSelect($event)" class="mb-4 !border-none !bg-gray-100">
+    <div *ngIf="files.length===0" class="mx-auto">Drop {{fileType}} file here</div>
+    <ngx-dropzone-preview *ngFor="let file of files" [removable]="true" (removed)="onRemove(file)">
+      <ngx-dropzone-label>{{ names[files.indexOf(file)] }}</ngx-dropzone-label>
+    </ngx-dropzone-preview>
+  </ngx-dropzone>
+  <div class="mb-4">
+    <app-text-input
+      *ngIf="!data.imageUpload"
+      [(inputModel)]="title"
+      placeholder="Introduction to Physics"
+      label="Title"
+    ></app-text-input>
+  </div>
+  <app-button
+    [disabled]="files.length !== 1 || isLoading"
+    (click)="upload()"
+    text="Upload File"
+    icon="cloud_upload"
+    [isLoading]="isLoading"
+  ></app-button>
+</div>

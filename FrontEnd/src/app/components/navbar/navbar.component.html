@@ -1,0 +1,131 @@
+<aside class="block h-screen shrink-0 w-screen sm:w-full bg-white p-4">
+  <header class="flex items-center justify-between text-2xl lg:text-3xl cursor-pointer font-bold text-indigo-600 mb-4">
+    <h1 [routerLink]="routes.dynamicRoute(this.storage.getUser().isTeacher)">Publify</h1>
+    <button *ngIf="!user.isTeacher" class="hidden sm:flex items-center justify-center"
+            (click)="openSearchDialog()">
+      <mat-icon>search</mat-icon>
+    </button>
+  </header>
+  <div class="w-full overflow-hidden truncate cursor-pointer group flex justify-between w-full gap-2 items-center mb-4 pr-2 pl-1">
+    <div class="flex items-center gap-1.5">
+      <app-profile-picture (click)="toProfile()" class="w-8 h-8 flex items-center justify-center text-center"></app-profile-picture>
+      <span class="capitalize whitespace-nowrap flex items-center">{{ storage.getUser().displayName() }}</span>
+    </div>
+    <button *ngIf="!user.isTeacher" class="flex sm:hidden flex items-center justify-center"
+            (click)="openSearchDialog()">
+      <mat-icon>search</mat-icon>
+    </button>
+  </div>
+  <hr class="mb-2.5" />
+  <nav>
+    <button
+      routerLinkActive="bg-indigo-50"
+      class="enabled:hover:bg-indigo-100/25 enabled:active:bg-indigo-100 w-full text-indigo-600 py-2 px-2.5 rounded flex gap-1.5 items-center overflow-hidden truncate text-left"
+      [routerLink]="[routes.dynamicRoute(storage.getUser().isTeacher)]"
+      (click)="emitCloseDrawer()"
+    >
+        <span class="w-full flex items-center gap-1.5">
+          <mat-icon>dashboard</mat-icon>
+          Dashboard
+        </span>
+    </button>
+    <mat-expansion-panel *ngIf="storage.getUser().isTeacher" style="box-shadow: none">
+      <mat-expansion-panel-header class="hover:bg-indigo-100/25 active:bg-indigo-100 w-full text-indigo-600 py-2 px-2.5 rounded flex items-center w-full overflow-hidden truncate text-left">
+        <button>
+        <span class="w-full flex items-center gap-1.5">
+          <mat-icon>school</mat-icon>
+          Courses
+        </span>
+        </button>
+      </mat-expansion-panel-header>
+      <ul *ngIf="courses.length > 0" class="max-h-44 overflow-y-auto">
+        <li *ngFor="let course of courses">
+          <button
+            [routerLink]="[routes.courses, course.id]"
+            routerLinkActive="bg-indigo-50"
+            (click)="emitCloseDrawer()"
+            class="enabled:hover:bg-indigo-100/25 enabled:active:bg-indigo-100 w-full text-indigo-600 py-2 px-3 rounded block overflow-hidden truncate text-left relative"
+          >
+            {{ course.title }}
+            <span routerLinkActive="absolute left-0 top-0 bottom-0 p-0.5 bg-indigo-600 rounded-full"></span>
+          </button>
+        </li>
+      </ul>
+      <div *ngIf="courses.length === 0">No courses yet</div>
+      <button
+        (click)="openCreateCourseDialog()"
+        class="flex w-full btn-secondary h-10 !justify-between !text-sm mt-2"
+      >
+        Create Course
+        <mat-icon>add</mat-icon>
+      </button>
+    </mat-expansion-panel>
+    <mat-expansion-panel *ngIf="!storage.getUser().isTeacher" style="box-shadow: none">
+      <mat-expansion-panel-header class="hover:bg-indigo-100/25 active:bg-indigo-100 w-full text-indigo-600 py-2 px-2.5 rounded flex items-center w-full overflow-hidden truncate text-left">
+        <button>
+        <span class="w-full flex items-center gap-1.5">
+          <mat-icon>people</mat-icon>
+          Teachers
+        </span>
+        </button>
+      </mat-expansion-panel-header>
+      <ul *ngIf="teachers.length > 0" class="max-h-44 overflow-y-auto">
+        <li *ngFor="let teacher of teachers">
+          <button
+            (click)="closeDrawer.emit()"
+            [routerLink]="[routes.teachers, teacher.email]"
+            [disabled]="router.url==='/teachers/'+teacher.email"
+            routerLinkActive="bg-indigo-50"
+            class="enabled:hover:bg-indigo-100/25 enabled:active:bg-indigo-100 w-full text-indigo-600 py-2 px-3 rounded block overflow-hidden truncate text-left relative"
+          >
+            {{ teacher.firstName }} {{ teacher.lastName }}
+            <span routerLinkActive="absolute left-0 top-0 bottom-0 p-0.5 bg-indigo-600 rounded-full"></span>
+          </button>
+        </li>
+      </ul>
+      <div *ngIf="teachers.length === 0">No subscriptions yet</div>
+    </mat-expansion-panel>
+    <button [routerLink]="[routes.metrics]"
+            routerLinkActive="bg-indigo-50"
+            *ngIf="storage.getUser().isTeacher"
+            [disabled]="router.url==='/metrics'"
+            (click)="closeDrawer.emit()"
+            class="enabled:hover:bg-indigo-100/25 enabled:active:bg-indigo-100 w-full text-indigo-600 py-2 px-2.5 rounded flex gap-1.5 items-center overflow-hidden truncate text-left">
+      <mat-icon>bar_chart</mat-icon>
+      Metrics
+    </button>
+    <mat-expansion-panel style="box-shadow: none">
+      <mat-expansion-panel-header
+        class="hover:bg-indigo-100/25 active:bg-indigo-100 w-full text-indigo-600 py-2 px-2.5 rounded flex items-center gap-1.5 w-full overflow-hidden truncate text-left">
+        <button>
+        <span class="flex items-center gap-1.5">
+          <mat-icon>settings</mat-icon>
+          Settings
+        </span>
+        </button>
+      </mat-expansion-panel-header>
+
+      <button
+        *ngFor="let button of settingsButtons"
+        [routerLink]="button.route"
+        (click)="closeDrawer.emit()"
+        [disabled]="router.url==='/'+button.route"
+        routerLinkActive="bg-indigo-50"
+        class="enabled:hover:bg-indigo-100/25 enabled:active:bg-indigo-100 w-full text-indigo-600 py-2 px-3 rounded block overflow-hidden truncate text-left relative"
+      >
+        {{button.name}}
+        <span routerLinkActive="absolute left-0 top-0 bottom-0 p-0.5 bg-indigo-600 rounded-full"></span>
+      </button>
+    </mat-expansion-panel>
+
+    <button
+      (click)="openConfirmLogoutDialog()"
+      class="enabled:hover:bg-indigo-100/25 enabled:active:bg-indigo-100 w-full text-indigo-600 py-2 px-2.5 rounded flex gap-1.5 items-center text-left"
+    >
+      <mat-icon>logout</mat-icon>
+      Log out
+    </button>
+  </nav>
+</aside>
+
+

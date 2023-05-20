@@ -1,0 +1,18 @@
+<mat-card>
+  <mat-card-title>Monthly Profits</mat-card-title>
+  <app-increase-box [data]="[3412,41241,2125,6421]" type="currency"></app-increase-box>
+
+  <apx-chart
+    #chart
+    [series]="chartOptions.series"
+    [chart]="chartOptions.chart"
+    [colors]="colors"
+    [yaxis]="chartOptions.yaxis"
+    [dataLabels]="chartOptions.dataLabels"
+    [markers]="chartOptions.markers"
+    [stroke]="chartOptions.stroke"
+    [grid]="chartOptions.grid"
+    [xaxis]="chartOptions.xaxis"
+    [tooltip]="chartOptions.tooltip"
+  ></apx-chart>
+</mat-card>

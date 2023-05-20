@@ -1,0 +1,99 @@
+<div *ngIf="!isLoading" class="p-4 md:p-8 h-screen overflow-y-auto">
+  <header class="mb-4">
+    <h2 class="text-2xl lg:text-3xl font-bold type-primary">Payment Methods</h2>
+    <h5 class="text-gray-500 text-base">Manage credit cards and bank settings</h5>
+  </header>
+  <div *ngIf="showStatus && !connected && user.isTeacher" class="mb-4">
+    <h3 class="flex items-start gap-2.5 mb-4 max-w-[700px]">
+      Your account is not currently connected to Stripe. To use this feature, you need to connect your Stripe account.
+      Click the button below to set up your Stripe account.
+    </h3>
+    <a *ngIf="!connected" [href]="connectedAccountUrl" class="btn-secondary w-fit">Connect With Stripe</a>
+  </div>
+  <section *ngIf="connected || !user.isTeacher" class="block">
+    <div class="mb-8">
+      <h5 class="flex items-center gap-2 text-2xl font-medium type-primary">
+        <mat-icon class="type-secondary">credit_card</mat-icon>
+        Saved cards
+      </h5>
+      <div *ngIf="(cards?.length === 0 || !cards) && !isLoading" class="mt-8 text-lg type-secondary">
+        You do not have any cards saved.
+      </div>
+      <ul *ngIf="!isLoading || cards?.length < 1"
+          class="snap-x snap-mandatory duration-200 group flex flex-row overflow-x-auto items-center gap-4 py-8 mb-4 md:gap-8">
+        <li *ngFor="let card of cards; let i = index" class="snap-start">
+          <span
+            class="hidden md:block relative duration-200 group-hover:!scale-100 group-hover:!left-0 group-hover:!opacity-100"
+            [style.transform]="'scale(calc(1 - (0.2 * ' + i + '})))'"
+            [style.z-index]="-i + 10"
+            [style.left.px]="i * -200"
+            [style.opacity.%]="100 - (i * 10)"
+          >
+            <app-payment-card
+              [card]="card"
+              (click)="openCardOptionsDialog(card)"
+            ></app-payment-card>
+          </span>
+          <span class="block md:hidden">
+            <app-payment-card
+              [card]="card"
+              (click)="openCardOptionsDialog(card)"
+            ></app-payment-card>
+          </span>
+        </li>
+      </ul>
+      <button
+        (click)="openCreditCardDialog()"
+        class="group type-secondary text-center md:h-32 md:w-36 h-44 w-full rounded-md bg-slate-50 border-slate-300 border border-dashed"
+      >
+        <span
+          class="text-white mx-auto w-fit p-2 flex items-center justify-center rounded-full bg-green-500 group-hover:bg-green-600 mb-2">
+          <mat-icon>add</mat-icon>
+        </span>
+        <div>New</div>
+        <div>credit card</div>
+      </button>
+    </div>
+    <div *ngIf="user.isTeacher" class="mb-8 relative">
+      <h5 class="flex items-center gap-2 text-2xl font-medium type-primary mb-8">
+        <mat-icon class="type-secondary">account_balance</mat-icon>
+        Bank Transfer
+      </h5>
+      <ul *ngIf="!isLoading" class="rounded border bg-white type-primary w-full mb-8">
+        <li class="grid grid-cols-2 items-center p-4 border-b">
+          <span class="flex items-center gap-2">
+            <span class="bg-blue-500 p-1 rounded-full"></span>
+            Bank account #21412
+          </span>
+          <span>9/22/2023</span>
+        </li>
+        <li class="grid grid-cols-2 items-center p-4">
+          <span>Bank account #42433</span>
+          <span>9/21/2024</span>
+        </li>
+      </ul>
+      <button
+        (click)="openBankingDialog()"
+        class="w-full md:w-fit flex justify-center items-center gap-1.5 group type-secondary hover:type-primary p-4 rounded-md bg-slate-50 hover:bg-white border-slate-300 border border-dashed"
+      >
+        <mat-icon>add</mat-icon>
+        <div>Add bank account</div>
+      </button>
+    </div>
+  </section>
+  <button
+    *ngIf="paymentMethods?.length > 0"
+    class="text-indigo-600 hover:text-black hover:underline underline-offset-4 w-fit disabled:opacity-50"
+  >
+    Delete Selected Payment Method
+  </button>
+</div>
+<div
+  *ngIf="isLoading"
+  class="w-full h-screen flex items-center justify-center"
+>
+  <mat-spinner
+    strokeWidth="2"
+    diameter="48"
+  ></mat-spinner>
+</div>

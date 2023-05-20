@@ -1,0 +1,15 @@
+.mat-list-option {
+  @apply rounded overflow-hidden hover:bg-indigo-600/5 active:bg-indigo-600/10;
+}
+
+.mat-list-item {
+  @apply text-slate-600 hover:text-indigo-600;
+}
+
+.mat-list-single-selected-option {
+  @apply bg-indigo-600/10 text-indigo-600;
+}
+
+.mat-list-option:disabled {
+  @apply hover:bg-indigo-600/10;
+}

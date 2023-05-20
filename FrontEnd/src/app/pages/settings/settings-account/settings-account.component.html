@@ -1,0 +1,20 @@
+<mat-card style="margin: auto">
+  <mat-card-header>
+    <mat-card-title>Change Password</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div style="display:grid;">
+      <mat-form-field>
+        <input [(ngModel)]="oldPassword" matInput type="password" placeholder="Old Password">
+      </mat-form-field>
+      <mat-form-field>
+        <input [(ngModel)]="newPassword" matInput type="password" placeholder="New Password">
+      </mat-form-field>
+      <mat-form-field>
+        <input [(ngModel)]="confirmPassword" matInput type="password" placeholder="Confirm Password">
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" (click)="onSubmit()">Change Password</button>
+    </div>
+    <p *ngIf="message">{{message}}</p>
+  </mat-card-content>
+</mat-card>

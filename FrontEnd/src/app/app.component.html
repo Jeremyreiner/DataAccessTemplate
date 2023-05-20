@@ -1,0 +1,39 @@
+<ion-app>
+  <ion-router-outlet *ngIf="!authService.isAuthenticated()" [animated]="false"></ion-router-outlet>
+  <ion-content *ngIf="authService.isAuthenticated()" force-overscroll="false">
+    <mat-drawer-container *ngIf="!isLoading" class="relative h-screen" autosize [hasBackdrop]="true">
+      <mat-drawer #drawer class="relative w-full sm:!w-96 type-secondary" [autoFocus]="false" mode="over">
+        <app-navbar
+          (closeDrawer)="drawer.close()"
+          [teachers]="api.teachers"
+          [courses]="api.courses"
+        ></app-navbar>
+        <app-close-dialog-button
+          (click)="drawer.close()"
+          class="absolute top-4 right-4"
+        ></app-close-dialog-button>
+      </mat-drawer>
+      <div
+        class="border-b border-b-slate-300 overflow-hidden w-full flex md:hidden items-center justify-between p-2 bg-indigo-100 text-indigo-600 fixed z-30">
+        <button (click)="drawer.toggle()" class="flex items-center justify-start">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <header class="text-2xl font-bold text-indigo-600">
+          <h1>Publify</h1>
+        </header>
+        <app-profile-picture class="w-8 h-8"></app-profile-picture>
+      </div>
+      <div class="shrink-0 flex relative w-screen md:h-screen">
+        <app-navbar
+          [courses]="api.courses"
+          [teachers]="api.teachers"
+          class="hidden md:block relative z-20 w-64 lg:w-72 shadow-md shrink-0"
+        ></app-navbar>
+        <ion-router-outlet
+          class="w-full fixed z-10 inset-0 top-12 md:top-0 md:relative bg-indigo-50"
+          [animated]="false"
+        ></ion-router-outlet>
+      </div>
+    </mat-drawer-container>
+  </ion-content>
+</ion-app>

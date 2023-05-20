@@ -1,0 +1,12 @@
+<ul class="hidden md:flex items-center gap-4 lg:gap-8" *ngIf="!isStudent">
+  <li *ngFor="let button of topButtons">
+    <button class="capitalize px-3 py-1 rounded-full border border-solid"
+            [ngClass]="router.url === '/' + button ? 'bg-gray-900 text-white border-gray-700' :
+            'text-gray-200 bg-transparent hover:bg-gray-900/25 active:bg-gray-900/30 border-transparent'"
+            (click)="navigate([button])"
+    >
+      {{button}}
+    </button>
+  </li>
+</ul>
+

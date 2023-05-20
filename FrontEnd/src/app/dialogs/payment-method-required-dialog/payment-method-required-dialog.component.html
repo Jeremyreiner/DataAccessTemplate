@@ -1,0 +1,16 @@
+<div class="relative">
+  <header class="mb-4">
+    <app-close-dialog-button (click)="close()" class="absolute top-0 right-0"></app-close-dialog-button>
+    <h2 class="type-primary font-bold text-xl">Payment Method Required</h2>
+    <p class="type-secondary text-sm">To subscribe to a teacher, you must first add a payment method.</p>
+  </header>
+  <div>
+    <app-button
+      (click)="openPaymentSettings()"
+      text="Add Payment Method"
+      [isLoading]="isLoading"
+      [iconReverse]="true"
+      icon="arrow_forward"
+    ></app-button>
+  </div>
+</div>

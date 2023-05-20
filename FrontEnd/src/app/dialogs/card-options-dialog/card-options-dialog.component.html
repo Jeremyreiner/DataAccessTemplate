@@ -1,0 +1,33 @@
+<div class="relative">
+  <header class="mb-4">
+    <app-close-dialog-button (click)="close()" class="absolute top-0 right-0"></app-close-dialog-button>
+    <h2 class="type-primary font-bold text-xl">Card Options</h2>
+    <p class="type-secondary text-sm">Delete card or set card as default payment method.</p>
+  </header>
+  <div class="mb-4 flex items-center w-full justify-center">
+    <app-payment-card
+      class="w-fit"
+      [card]="card"
+    ></app-payment-card>
+  </div>
+  <div class="flex items-center gap-4">
+    <app-button
+      [matTooltip]="(cards.length === 1 && teachers?.length>0)? 'cannot delete card when there are active subscriptions':''"
+      class="w-full"
+      [disabled]="isLoading || (cards.length === 1 && teachers?.length>0)"
+      [isLoading]="isDeleting"
+      (onClick)="deleteCard()"
+      type="secondary"
+      icon="delete"
+      text="Delete Card"
+    ></app-button>
+    <app-button
+      *ngIf="!card.isDefaultPaymentMethod || cards.length === 1"
+      (onClick)="setDefaultPaymentMethod()"
+      class="w-full"
+      text="Set As Default"
+      [isLoading]="isSettingDefault"
+      [disabled]="isLoading || cards.length === 1"
+    ></app-button>
+  </div>
+</div>

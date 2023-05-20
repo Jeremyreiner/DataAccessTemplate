@@ -1,0 +1,23 @@
+<section *ngIf="user.isVerified"  class="h-auto overflow-y-auto overflow-x-hidden w-full type-primary">
+  <header class="flex items-center justify-between text-2xl md:text-3xl p-8">
+    <h2>Hi <strong>{{ user?.firstName }}</strong>, {{ greeting() }}</h2>
+    <app-search-bar *ngIf="!user.isTeacher" class="hidden xl:block text-base w-96"></app-search-bar>
+  </header>
+
+  <div *ngIf="!isLoading">
+
+    <app-book-carousel
+      *ngIf="continueReading"
+      title="Continue reading"
+      [books]="continueReading"
+      elementTag="carousel2"
+    ></app-book-carousel>
+
+    <app-course-carousel *ngIf="api.courses.length" [courses]="api.courses"></app-course-carousel>
+
+    <app-book-carousel title="Recent uploads" [books]="api.myBooks" elementTag="carousel1"></app-book-carousel>
+  </div>
+  <div *ngIf="isLoading" class="absolute inset-0 flex justify-center h-full items-center z-10 px-8">
+    <mat-spinner color="primary" strokeWidth="2" diameter="48"></mat-spinner>
+  </div>
+</section>

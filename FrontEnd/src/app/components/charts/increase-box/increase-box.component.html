@@ -1,0 +1,13 @@
+<div class="flex items-center gap-2 mb-4">
+  <p
+    class="font-bold text-2xl"><span class="type-secondary" *ngIf="_type==='currency'">$</span>{{data?
+    data[0].toLocaleString('en-us', {minimumFractionDigits: 0}) :
+    ''}}</p>
+  <ion-icon class="icon-margin" [class]="data[0] > 0 ? '' : 'rotate-180'" name="arrow-up-circle"></ion-icon>
+  <div>
+    <h3 class="font-bold" [class]="data[0] > 0 ? 'text-green-600' : 'text-red-600'">
+      {{data?.length > 2? (data[0] / data[1] * 100).toLocaleString('en-us',{maximumFractionDigits: 1}) + '%' : ''}}
+    </h3>
+    <p class="small-text">Last Month</p>
+  </div>
+</div>

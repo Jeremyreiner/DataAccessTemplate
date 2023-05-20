@@ -1,0 +1,59 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      dotnet: 6.0
+      python: 3.11
+    commands:
+      - echo "Setting up environment shut the fuck up"
+
+  pre_build:
+    commands:
+      - mkdir -p build-output/backend
+      - mkdir -p build-output/frontend
+      - mkdir -p build-output/pdf-to-jpeg
+      - mkdir -p scripts
+      - cd Publify
+      - echo "Restoring NuGet packages"
+      - dotnet restore
+      - cd ..
+      - cd FrontEnd
+      - npm install
+      - npm install -g @ionic/cli
+      - cd ..
+
+  build:
+    commands:
+      - echo "Building the application"
+      - dotnet publish -r linux-x64 --configuration Release
+      - cd FrontEnd
+      - ionic build --aot  
+      - cd ..
+
+  post_build:
+    commands:
+      - cp -r Publify/bin/Release/net6.0/* build-output/backend
+      - cp -r FrontEnd/www/* build-output/frontend
+      - cp -r PdfToJpeg/* build-output/pdf-to-jpeg
+      - cp appspec.yml build-output
+      - cp appspec.yml ../
+      - PARENT_DIR=$(dirname $(dirname "$(pwd)/build-output"))
+      - cp appspec.yml "$PARENT_DIR"
+      - cp -r Scripts/* scripts
+
+artifacts:
+  files:
+    - 'build-output/**/*'
+    - 'appspec.yml'
+    - 'scripts/**/*'
+  name: PublifyArtifacts
+
+cache:
+  paths:
+    - '/root/.nuget/packages'
+    
+    
+    
+    
+    

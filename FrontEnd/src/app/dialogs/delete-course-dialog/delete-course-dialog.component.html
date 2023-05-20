@@ -1,0 +1,16 @@
+<div>
+  <h5 class="mb-6 type-secondary text-xl">
+    Are you sure you would like to delete "<span class="font-bold">{{ course.title }} ({{ course.courseId }})</span>"
+    from your courses?
+  </h5>
+  <div class="flex gap-3 items-center w-full">
+    <button (click)="close()" class="w-full btn-secondary">Cancel</button>
+    <button (click)="deleteCourse()" [disabled]="isLoading" class="w-full btn-primary">
+      <span *ngIf="!isLoading">Delete</span>
+      <div *ngIf="isLoading" class="flex justify-between items-center z-10">
+        <mat-spinner color="accent" strokeWidth="2" diameter="24"></mat-spinner>
+      </div>
+    </button>
+  </div>
+  <p *ngIf="message">{{message}}</p>
+</div>

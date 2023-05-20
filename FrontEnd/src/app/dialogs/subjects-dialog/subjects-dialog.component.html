@@ -1,0 +1,37 @@
+<form>
+  <h2 class="type-secondary">Subject(s)</h2>
+  <mat-form-field class="example-chip-list w-full" appearance="standard">
+    <mat-chip-list #chipGrid aria-label="School selection">
+      <mat-chip disableRipple *ngFor="let subject of subjects" (removed)="remove(subject)">
+        {{ subject }}
+        <button matChipRemove [attr.aria-label]="'remove ' + subject">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip>
+    </mat-chip-list>
+    <input placeholder="New Subject..."
+           class="!mt-4"
+           #subjectInput
+           [formControl]="subjectCtrl"
+           [matChipInputFor]="chipGrid"
+           [matAutocomplete]="auto"
+           [ngModel]="subjectInput"
+           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+           (matChipInputTokenEnd)="add($event)"
+    />
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)" disableRipple>
+      <mat-option *ngFor="let subject of filteredSubjects | async" [value]="subject">
+        {{ subject }}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+  <div class="w-full flex items-center justify-end gap-3">
+    <button (click)="closeDialog()" class="w-full btn-secondary">Cancel</button>
+    <button [disabled]="isLoading || !subjects.length" class="w-full btn-primary" (click)="submit()">
+      <span *ngIf="!isLoading">{{ subjects.length ? 'Update' : 'Submit' }}</span>
+      <div *ngIf="isLoading" class="flex justify-between items-center z-10">
+        <mat-spinner color="accent" strokeWidth="2" diameter="24"></mat-spinner>
+      </div>
+    </button>
+  </div>
+</form>

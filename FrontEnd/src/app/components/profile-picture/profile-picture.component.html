@@ -1,0 +1,35 @@
+<div class="w-full h-full">
+  <div
+    [mat-menu-trigger-for]="editable? imageMenu : null"
+    *ngIf="!isLoading && !imagePath?.includes('image-loading')"
+    class="bg-white mx-auto rounded-full border overflow-hidden cursor-pointer w-full h-full text-center"
+    (click)="emitClickEvent()"
+    [matTooltip]="editable? 'Edit' :''"
+    matTooltipPosition="above"
+  >
+    <img
+      *ngIf="imagePath"
+      (error)="showDefImg($event)"
+      [src]="imagePath"
+      class="w-full h-auto" alt="profile-image"
+    />
+    <button *ngIf="!imagePath" class="bg-slate-800 text-indigo-200 w-full h-full">{{ _user?.initials() }}</button>
+  </div>
+  <div *ngIf="isLoading || imagePath?.includes('image-loading')"
+       class="rounded-full bg-white w-full h-full flex justify-center items-center z-10">
+    <mat-spinner color="primary" strokeWidth="2" diameter="24"></mat-spinner>
+  </div>
+  <div>
+  <mat-menu #imageMenu="matMenu" class="w-48 !shadow-none border-primary">
+    <button (click)="imageInput.click()" class="w-full !text-sm !flex !items-center !justify-between" mat-menu-item disableRipple >
+      Upload Photo
+      <mat-icon class="!w-fit !mr-0 !text-inherit !text-base">add_a_photo</mat-icon>
+    </button>
+    <button (click)="api.deleteProfilePhoto()" class="w-full !text-sm !flex !items-center !justify-between" mat-menu-item disableRipple>
+      Remove Photo
+      <mat-icon class="!w-fit !mr-0 !text-inherit !text-base">delete</mat-icon>
+    </button>
+  </mat-menu>
+  <input #imageInput hidden="true" type="file" (change)="postProfilePicture($event)" accept=".jpg"/>
+</div>
+</div>

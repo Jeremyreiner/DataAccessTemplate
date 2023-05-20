@@ -1,0 +1,20 @@
+<div class="relative">
+  <header class="mb-4">
+    <app-close-dialog-button (click)="close()" class="absolute top-0 right-0"></app-close-dialog-button>
+    <h2 class="type-primary font-bold text-xl">Add Bank Account</h2>
+    <p class="type-secondary text-sm">Link a bank account to receive payments.</p>
+  </header>
+  <fieldset class="flex-col flex w-full gap-4">
+    <app-text-input
+      label="Account Number"
+      placeholder="123456789"
+      [(inputModel)]="bankAccount.accountNumber"
+    ></app-text-input>
+    <app-text-input
+      label="Routing Number"
+      placeholder="123456789"
+      [(inputModel)]="bankAccount.routingNumber"
+    ></app-text-input>
+    <button class="btn-primary">Add Bank Account</button>
+  </fieldset>
+</div>

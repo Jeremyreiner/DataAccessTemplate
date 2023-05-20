@@ -1,0 +1,79 @@
+<div (keyup.enter)="login()">
+  <ion-card class="card-container">
+    <div class="h-full w-full flex ion-justify-content-center" (keyup.enter)="login()">
+      <div class="h-full w-full lg:w-5/12 flex flex-col ion-justify-content-center bg-white">
+        <p class="text-xl type-primary text-center font-medium">Welcome back to</p>
+        <h1 class="text-indigo-600 text-center text-5xl mb-8 font-bold">Publify</h1>
+        <!--    <ion-card class="bg-white w-auto max-w-lg mx-auto p-8">-->
+        <div class="type-primary max-w-lg mx-auto px-4 xs:px-8">
+          <label for="username" class="mb-2">Email</label>
+          <input id="username" class="input-primary mb-4" [(ngModel)]="username" />
+          <label for="password" class="mb-2">Password</label>
+          <input id="password" class="input-primary mb-4" type="password" [(ngModel)]="password" />
+
+
+          <div class="flex items-center justify-between mb-4 text-sm">
+            <mat-checkbox  [(ngModel)]="storageService.rememberMe">Remember me</mat-checkbox>
+            <button (click)="openForgotPassword()"
+               class="block type-secondary hover:text-indigo-600 hover:underline underline-offset-4">
+              Forgot password?
+            </button>
+          </div>
+          <div class="mb-4">
+            <app-button
+              [isLoading]="isLoading"
+              [disabled]="isLoading"
+              class="w-full"
+              text="Login"
+              (click)="login()"
+            ></app-button>
+          </div>
+
+          <div class="flex justify-center gap-2 text-base mb-8">
+            <p class="font-bold">Don't have an account?</p>
+<!--            <button class="text-indigo-600 underline underline-offset-4 hover:text-black"-->
+<!--                    (click)="openRegistration()"-->
+<!--            >-->
+<!--              Register Now-->
+<!--            </button>-->
+            <button
+              class="text-indigo-600 underline underline-offset-4 hover:text-black text-right"
+              (click)="openWaitList()"
+            >
+              Join the waiting list
+            </button>
+          </div>
+          <div class="flex items-center gap-2 w-full mb-8">
+            <div class="w-1/2 h-px bg-gray-600"></div>
+            Or
+            <div class="w-1/2 h-px bg-gray-600"></div>
+          </div>
+          <div id="buttonParent" class="mb-4">
+            <div id="buttonDiv" class="!w-full"></div>
+          </div>
+          <div class="block lg:hidden mx-auto text-center">
+            <button (click)="openLanding()"
+                    class="mx-auto font-medium text-indigo-600 hover:text-black hover:underline underline-offset-4">
+              Learn more
+            </button>
+          </div>
+          <a style="color: red; margin: auto" *ngIf="loginFailed">Username or password is incorrect</a>
+        </div>
+      </div>
+      <div class="items-center h-screen justify-center flex-col relative bg-indigo-50 hidden lg:flex w-7/12">
+        <img
+          class="w-auto max-w-lg h-auto mx-auto mb-8"
+          src="../../../../assets/login/boy-reading.png"
+          alt="boy-reading"
+        />
+        <div class="mx-auto text-center">
+          <button (click)="openLanding()"
+                  class="mx-auto font-medium text-indigo-600 hover:text-black hover:underline underline-offset-4">
+            Learn more
+          </button>
+        </div>
+      </div>
+      <!--    </ion-card>-->
+    </div>
+  </ion-card>
+</div>

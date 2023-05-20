@@ -1,0 +1,33 @@
+<div class="relative">
+  <header class="mb-4">
+    <app-close-dialog-button (click)="close()" class="absolute top-0 right-0"></app-close-dialog-button>
+    <h2 class="type-primary font-bold text-xl">{{ subscribed ? 'Cancel Subscription' : 'Confirm Subscription' }}</h2>
+    <p
+      class="type-secondary text-sm">{{ subscribed? 'Are you sure you want to cancel your subscription?' :
+      'Are you sure you want to subscribe to ' + teacher.firstName + ' ' + teacher.lastName + '?' }}</p>
+  </header>
+  <div class="flex items-center gap-1.5 mb-4">
+    <div class="w-8 h-8">
+      <app-profile-picture
+        [guid]="teacher?.profilePicture"
+        [user]="teacher"
+      ></app-profile-picture>
+    </div>
+    <span>{{ teacher?.displayName() }}</span>
+  </div>
+  <ul *ngIf="!subscribed" class="mb-4 text-sm list-desc type-secondary">
+    <li>You will gain access to all published content.</li>
+    <li>You will be charged $8 per month.</li>
+    <li>You can cancel your subscription at any time.</li>
+  </ul>
+  <ul *ngIf="subscribed" class="mb-4 text-sm type-secondary">
+    <li>You will lose access to all published content.</li>
+    <li>Your subscription will end on [date].</li>
+    <li>You can resubscribe at any time.</li>
+  </ul>
+  <span>
+    <app-button (onClick)="subscribe()" [disabled]="isLoading"
+                [isLoading]="isLoading"
+                [text]="subscribed? 'Unsubscribe':'Subscribe'"></app-button>
+  </span>
+</div>

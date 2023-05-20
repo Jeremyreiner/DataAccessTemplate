@@ -1,0 +1,57 @@
+<div class="relative type-primary !text-sm md:text-base pb-32 md:pb-0 overflow-y-auto">
+  <app-close-dialog-button (click)="close()" class="absolute top-0 right-0"></app-close-dialog-button>
+  <header class="mb-4">
+    <h2 class="type-primary font-bold text-xl">Add Credit Card</h2>
+    <p class="sm:w-full w-2/3 type-secondary text-sm">Saving your card will help us simplify the payment process in the future.</p>
+  </header>
+  <div>
+    <img class="mb-2 w-auto max-w-[250px] mx-auto" src="../../../assets/payments/two-cards.png" alt="two-cards">
+  </div>
+  <div class="flex flex-col gap-4 w-full">
+
+    <app-text-input
+      label="Full Name"
+      [(inputModel)]="fullName"
+      placeholder="Yitzkhak Nachem"
+    ></app-text-input>
+
+    <app-text-input
+      [(inputModel)]="card.number"
+      label="Card Number"
+      placeholder="1234 5678 9101 1123"
+    ></app-text-input>
+
+    <div class="w-full flex gap-4 flex-col xs:flex-row">
+      <app-text-input
+        [(inputModel)]="card.expMonth"
+        class="w-full xs:w-1/3"
+        label="Exp. Month"
+        placeholder="08"
+        maxlength="2"
+      ></app-text-input>
+
+      <app-text-input
+        class="w-full xs:w-1/3"
+        [(inputModel)]="card.expYear"
+        label="Exp. Year"
+        placeholder="2028"
+        maxlength="4"
+      ></app-text-input>
+
+      <app-text-input
+        class="w-full xs:w-1/3"
+        [(inputModel)]="card.cvc"
+        label="CVC"
+        placeholder="0123"
+        maxlength="4"
+      ></app-text-input>
+    </div>
+    <p class="type-secondary text-sm">This card will be your selected method of payment</p>
+    <app-button
+      text="Add Card"
+      (onClick)="createPaymentMethod()"
+      [isLoading]="isLoading"
+      [disabled]="isLoading || !card.cvc || !card.expYear || !card.expMonth || !card.number || !fullName "
+    ></app-button>
+  </div>
+</div>

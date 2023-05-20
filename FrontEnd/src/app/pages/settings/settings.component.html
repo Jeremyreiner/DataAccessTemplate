@@ -1,0 +1,27 @@
+<section class="card-section">
+  <nav class="card-nav">
+    <mat-selection-list #shoes [multiple]="false">
+      <mat-list-option [selected]="option.name === selectedPage"
+                       class="capitalize"
+                       *ngFor="let option of options"
+                       [value]="option"
+                       [disabled]="option.name === selectedPage"
+                       disableRipple
+                       (click)="selectPage(option.name)"
+      >
+        <div class="flex items-center gap-2">
+          <mat-icon>{{ option.icon }}</mat-icon>
+          {{ option.name }}
+        </div>
+      </mat-list-option>
+    </mat-selection-list>
+  </nav>
+<!--  <div class="card-content overflow-y-scroll">-->
+<!--    <app-settings-profile *ngIf="selectedPage === 'profile'"></app-settings-profile>-->
+<!--    <app-settings-payments *ngIf="selectedPage === 'payments'"></app-settings-payments>-->
+<!--    <app-settings-subscriptions *ngIf="selectedPage === 'metrics'"></app-settings-subscriptions>-->
+<!--    <app-settings-privacy-policy *ngIf="selectedPage === 'privacy policy'"></app-settings-privacy-policy>-->
+<!--  </div>-->
+</section>
+
+

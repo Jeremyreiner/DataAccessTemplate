@@ -1,0 +1,1 @@
+export * from './bank-account-dialog.component';

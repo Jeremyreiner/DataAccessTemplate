@@ -1,0 +1,91 @@
+
+-----------------------------------------------------------------
+
+FULLSTACKPUBLIFY: 18.196.3.121
+
+BACKEND DEV: 18.196.102.87 
+
+
+Frontend Deployment:
+-----------------------------------------------------------------
+PUT PROXY API IN SITES-ENABLED /etc/nginx/sites-available$
+
+ng build --prod --output-hashing none
+
+ng build --aot --configuration production
+
+
+
+sftp Frontend/dist
+
+sudo rm -rf /var/www/html/*
+sudo cp -r /home/ubuntu/Frontend/* /var/www/html
+
+
+sudo rm -rf /var/www/html/InfluxDbUI/*
+sudo cp -r /home/ubuntu/InfluxDbUI/* /var/www/html
+
+sudo rm -rf /home/ubuntu/BackendServer/*
+
+sudo rm -rf /home/ubuntu/BackendServer/Uploads/* - for removing all images (memory problem)
+
+55 23 * * * sudo rm -rf /home/ubuntu/BackendServer/Uploads/*
+
+sudo systemctl restart nginx
+
+.Net Server Deployment
+--------------------------------------------------------------
+publish Backend.csproj
+rename Backend/publish --> BackendServer
+sftp BackendServer
+
+Start Server:
+-----------------
+cd BackendServer
+sudo chmod +x Backend
+sudo nohup ./Backend&                   - (execute silent!)
+
+
+sudo ./Backend                          -- run with logs in console window for testing purposes, for prod use nohup
+Stop Server:
+-----------------
+sudo kill $(ps aux | grep 'Publify' | awk '{print $2}')
+
+
+Config NGINX:
+-----------------
+sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.BAK
+
+sftp nginx.conf
+sudo cp ./nginx.conf /etc/nginx/nginx.conf
+sudo systemctl restart nginx
+
+
+sudo ./aws-login
+
+
+
+---PYTHON---
+
+
+cd in to venv
+
+1. cd ~/backend/pdf-to-jpg-project/materials-flask-connexion-rest-part-1 (1)/venv
+
+2. source Scripts/activate
+
+3. cd rp_flask_api
+
+4. sudo python3 app.py
+
+
+to start virtual env run:
+source Scripts/activate
+
+
+
+--backend cloud dev
+ssh ubuntu@18.196.102.87 -p22 -i "C:\Users\benja\pems\publifyKey.pem"
+
+--fullstack production
+ssh ubuntu@18.196.3.121 -p22 -i "C:\Users\benja\pems\publifyKey.pem"

@@ -1,0 +1,18 @@
+<div class="bg-gray-700 fixed inset-0 flex items-center justify-center">
+  <mat-spinner color="accent" strokeWidth="2" diameter="50"></mat-spinner>
+</div>
+
+<div class="fixed inset-0">
+  <button
+    class="duration-150 z-50 absolute top-4 mt-0.5 left-6 text-indigo-200 bg-gray-700 hover:bg-gray-800 active:bg-gray-900 rounded py-0.5 px-2.5"
+    (click)="goBack()">
+    Back
+  </button>
+  <ng2-pdfjs-viewer
+    #pdfViewer
+    [download]="false"
+    [print]="false"
+    [openFile]="false"
+    class="fixed inset-0"
+  ></ng2-pdfjs-viewer>
+</div>

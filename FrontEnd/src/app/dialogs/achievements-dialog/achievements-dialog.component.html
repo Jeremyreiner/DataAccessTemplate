@@ -1,0 +1,26 @@
+<h2 class="type-secondary mb-3">Degrees & Achievements</h2>
+<input class="input-primary mb-3" [(ngModel)]="achievement.description" placeholder="Description" />
+<div class="block sm:flex items-center w-full gap-3 mb-3">
+  <input type="text"
+         [(ngModel)]="achievement.institution"
+         class="input-primary w-3/4"
+         placeholder="Institution"
+  />
+  <input type="text"
+         [(ngModel)]="achievement.year"
+         maxlength="4"
+         minlength="4"
+         class="input-primary w-1/4"
+         placeholder="Year"
+  />
+</div>
+<div class="flex justify-end items-center gap-3">
+  <button class="w-full btn-secondary" (click)="closeDialog()">Cancel</button>
+  <button [disabled]="isLoading || !achievement.description || !achievement.institution || !achievement.year" class="w-full btn-primary"
+          (click)="submit()">
+    <span *ngIf="!isLoading">Submit</span>
+    <div *ngIf="isLoading" class="flex justify-between items-center z-10">
+      <mat-spinner color="accent" strokeWidth="2" diameter="20"></mat-spinner>
+    </div>
+  </button>
+</div>

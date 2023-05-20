@@ -1,0 +1,23 @@
+.chart-header {
+  //margin-left: 16px;
+  //height: 50px;
+  display: flex;
+}
+
+.icon-margin {
+  //font-size: 25px;
+  //margin-top: 4px;
+  //margin-left: 11px;
+  //margin-right: 12px;
+  font-size: 2em;
+  color: var(--chart-purple);
+}
+
+.difference {
+  font-weight: 600;
+  color: var(--chart-purple);
+}
+
+.small-text {
+  font-weight: 400;
+}

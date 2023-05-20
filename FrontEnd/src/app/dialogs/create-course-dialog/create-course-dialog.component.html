@@ -1,0 +1,34 @@
+<div class="relative">
+  <header class="mb-4">
+    <app-close-dialog-button (click)="close()" class="absolute top-0 right-0"></app-close-dialog-button>
+    <h2 class="type-primary font-bold text-xl">Create Course</h2>
+    <p class="type-secondary text-sm">Add a few details about your course.</p>
+  </header>
+  <fieldset>
+    <div class="block space-y-4 mb-4">
+      <app-text-input
+        [(inputModel)]="postCourse.title"
+        label="Title (required)"
+        placeholder="General Chemistry"
+      ></app-text-input>
+      <div class="grid grid-cols-1 xs:grid-cols-2 gap-4">
+        <app-text-input
+          [(inputModel)]="postCourse.courseId"
+          placeholder="CH101"
+          label="Code"
+        ></app-text-input>
+        <app-text-input
+          [(inputModel)]="postCourse.subject"
+          placeholder="Chemistry"
+          label="Subject"
+        ></app-text-input>
+      </div>
+    </div>
+    <button class="w-full btn-primary" (click)="createCourse()">
+      <span *ngIf="!isLoading">Create Course</span>
+      <div *ngIf="isLoading" class="flex justify-between items-center z-10">
+        <mat-spinner color="accent" strokeWidth="2" diameter="24"></mat-spinner>
+      </div>
+    </button>
+  </fieldset>
+</div>

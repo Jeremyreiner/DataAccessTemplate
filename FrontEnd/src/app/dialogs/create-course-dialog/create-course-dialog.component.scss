@@ -1,0 +1,10 @@
+.input-container {
+  display: grid;
+  grid-gap: 10px;
+}
+
+.two-grid {
+  display: grid;
+  grid-gap: 2%;
+  grid-template-columns: 49% 49%;
+}
