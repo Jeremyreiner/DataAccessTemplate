@@ -6,7 +6,6 @@ using Template.Shared.Services;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Template.Database.Infrastructure.MySql;
 using Template.Database.Repositories;
-using Template.Shared.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
