@@ -7,6 +7,7 @@ namespace Template.Shared.Interfaces
     /// <summary>
     /// This is a template application interface. All values must be updated for proper use cases
     /// This interface allows the initial designer access of CRUD generic functions only.
+    /// Interface requires input only for login validation,everything else is autonomously done.
     /// </summary>
     public interface IDalService
     {
@@ -23,9 +24,8 @@ namespace Template.Shared.Interfaces
         #region Update
 
         /// <summary>
-        /// Randomly generates new user data for selected user...
+        /// Updates new user data using Faker randomly for selected user...
         /// </summary>
-        /// <param name="publicKey"></param>
         /// <returns>Result of type User</returns>
         Task<Result<UserEntity>> UpdateAsync();
 
@@ -34,11 +34,9 @@ namespace Template.Shared.Interfaces
         #region Delete
 
         /// <summary>
-        /// Deletes entity from db, and in every case returns only
-        /// HttpStatusResponse.
+        /// Deletes entity from DB
         /// </summary>
-        /// <param name="publicKey"></param>
-        /// <returns></returns>
+        /// <returns>HttpStatusResponse</returns>
         Task<Result<HttpStatusCode>> DeleteAsync();
 
         #endregion
@@ -46,20 +44,25 @@ namespace Template.Shared.Interfaces
         #region GetBy
 
         /// <summary>
-        /// This method should be used for every get case.
-        /// If passed a valid public key parameter, the method returns the entity,
-        /// otherwise throwing an invalid get parameter error.
+        /// Gets user randomly from DB.
         /// </summary>
-        /// <param name="publicKey"></param>
         /// <returns>Result of type User</returns>
         Task<Result<UserEntity>> GetByAsync();
 
+        /// <summary>
+        /// Gets a user from DB, including Many To Many Relationships
+        /// </summary>
+        /// <returns>Result of type User</returns>
         Task<Result<UserEntity>> GetWithAsync();
 
         #endregion
 
         #region Get AllBy
 
+        /// <summary>
+        /// Gets all User entities from DB.
+        /// </summary>
+        /// <returns>List of Users</returns>
         Task<List<UserEntity>> GetAllByAsync();
 
 
@@ -67,6 +70,10 @@ namespace Template.Shared.Interfaces
 
         #region Subscription
 
+        /// <summary>
+        /// Using Faker data, either a entity will subscribe to or unsubscribe from a randomly selected user entity.
+        /// </summary>
+        /// <returns>Result of type User</returns>
         Task<Result<UserEntity>> SubscribeToAsync();
 
         #endregion
