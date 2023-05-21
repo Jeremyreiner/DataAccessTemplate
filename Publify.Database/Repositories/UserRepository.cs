@@ -57,10 +57,28 @@ namespace Template.Database.Repositories
                 : Result<UserEntity>.Failed(new Error(new Records.PublicId(Guid.Parse(publicKey))
                     .NotFound()));
         }
-        
+
+
+        public async Task<Result<UserEntity>> GetWithAsync(string publicKey, Expression<Func<UserEntity, bool>> predicate)
+        {
+            var teacher = await _DbContext
+                .Teachers
+                .Include(user => user.Followers)
+                .Include(user => user.Following)
+                .FirstOrDefaultAsync(predicate);
+
+            return teacher is not null
+                ? Result<UserEntity>.Success(teacher)
+                : Result<UserEntity>.Failed(new Error(new Records.PublicId(Guid.Parse(publicKey))
+                    .NotFound()));
+        }
+
         public async Task<Result<List<UserEntity>>> GetListByAsync()
         {
-            var teachers = await _DbContext.Teachers.ToListAsync();
+            var teachers = await _DbContext.Teachers
+                .Include(user => user.Followers)
+                .Include(user => user.Following)
+                .ToListAsync();
 
             return teachers.Any()
                 ? Result<List<UserEntity>>.Success(teachers) 

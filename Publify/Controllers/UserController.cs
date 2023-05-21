@@ -42,13 +42,39 @@ namespace Template.Controllers
         }
 
         [HttpGet]
-        public async Task<UserModel> GetByAsync(string publicKey)
+        public async Task<UserModel> GetByAsync()
         {
-            var result = await _DalService.GetByAsync(publicKey);
+            var result = await _DalService.GetByAsync();
 
             if (result.IsSuccess)
             {
                 return result.Value.ToModel();
+            }
+
+            throw result.Error.NotFound;
+        }
+
+        [HttpGet("Followers")]
+        public async Task<List<UserModel>> GetFollowers()
+        {
+            var result = await _DalService.GetWithAsync();
+
+            if (result.IsSuccess)
+            {
+                return result.Value.Followers.ToModelList();
+            }
+
+            throw result.Error.NotFound;
+        }
+
+        [HttpGet("Following")]
+        public async Task<List<UserModel>> GetFollowing()
+        {
+            var result = await _DalService.GetWithAsync();
+
+            if (result.IsSuccess)
+            {
+                return result.Value.Following.ToModelList();
             }
 
             throw result.Error.NotFound;
@@ -64,18 +90,26 @@ namespace Template.Controllers
         }
 
         [HttpPut]
-        public async Task<UserModel> UpdateAsync(string publicKey)
+        public async Task<UserModel> UpdateAsync()
         {
-            var response = await _DalService.UpdateAsync(publicKey);
+            var response = await _DalService.UpdateAsync();
+
+            return response.Value.ToModel();
+        }
+
+        [HttpPut("SubscribeTo")]
+        public async Task<UserModel> Subscribe()
+        {
+            var response = await _DalService.SubscribeToAsync();
 
             return response.Value.ToModel();
         }
 
 
         [HttpDelete("Delete")]
-        public async Task<HttpStatusCode> DeleteAsync(string publicKey)
+        public async Task<HttpStatusCode> DeleteAsync()
         {
-            var code = await _DalService.DeleteAsync(publicKey);
+            var code = await _DalService.DeleteAsync();
 
             return code.Status;
         }

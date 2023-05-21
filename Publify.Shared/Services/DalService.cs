@@ -39,7 +39,15 @@ namespace Template.Shared.Services
                 CreatedOnDt = DateTime.Now
             };
 
-            var result = await GetByAsync(user.PublicId.ToString());
+            var valid = ValidateGuid(user.PublicId.ToString());
+
+            if (!valid.IsSuccess)
+            {
+                return Result<UserEntity>
+                    .Failed(new Error(valid.Error.InvalidConversion));
+            }
+
+            var result = await _UserRepository.GetByAsync(user.PublicId.ToString(), u => u.PublicId == valid.Value);
 
             if (result.IsSuccess)
             {
@@ -56,9 +64,9 @@ namespace Template.Shared.Services
 
         #region UPDATE ENTITY
 
-        public async Task<Result<UserEntity>> UpdateAsync(string publicKey)
+        public async Task<Result<UserEntity>> UpdateAsync()
         {
-            var result = await GetByAsync(publicKey);
+            var result = await GetByAsync();
 
             if (!result.IsSuccess)
             {
@@ -81,10 +89,9 @@ namespace Template.Shared.Services
 
         #region DELETE ENTITY
 
-        public async Task<Result<HttpStatusCode>> DeleteAsync(string publicKey)
+        public async Task<Result<HttpStatusCode>> DeleteAsync()
         {
-            var result = await GetByAsync(publicKey);
-
+            var result = await GetByAsync();
 
             if (result.IsSuccess)
             {
@@ -103,8 +110,10 @@ namespace Template.Shared.Services
 
         #region GetBy
 
-        public async Task<Result<UserEntity>> GetByAsync(string publicKey)
+        public async Task<Result<UserEntity>> GetByAsync()
         {
+            var publicKey = await GetPublicKey();
+
             var valid = ValidateGuid(publicKey);
 
             if (!valid.IsSuccess)
@@ -114,6 +123,21 @@ namespace Template.Shared.Services
             }
 
             return await _UserRepository.GetByAsync(publicKey, u => u.PublicId == valid.Value);
+        }
+
+        public async Task<Result<UserEntity>> GetWithAsync()
+        {
+            var publicKey = await GetPublicKey();
+
+            var valid = ValidateGuid(publicKey);
+
+            if (!valid.IsSuccess)
+            {
+                return Result<UserEntity>
+                    .Failed(new Error(valid.Error.InvalidConversion));
+            }
+
+            return await _UserRepository.GetWithAsync(publicKey, u => u.PublicId == valid.Value);
         }
 
         #endregion
@@ -136,6 +160,32 @@ namespace Template.Shared.Services
 
         #endregion
 
+        #region Subcription
+
+        public async Task<Result<UserEntity>> SubscribeToAsync()
+        {
+            var users = await GetAllByAsync();
+
+            var random = new Random();
+
+            var user1 = users[random.Next(users.Count)];
+
+            var user2 = users[random.Next(users.Count)];
+
+            if (user1.Followers.Contains(user2))
+            {
+                user1.Followers.Remove(user2);
+            }
+            else
+            {
+                user1.Followers.Add(user2);
+            }
+
+            return await _UserRepository.UpdateAsync(user1);
+        }
+
+        #endregion
+
         #region AUTHENTICATION
 
         public async Task<Result<UserEntity>> Login(string email, string password)
@@ -150,8 +200,8 @@ namespace Template.Shared.Services
 
             var verified = password.VerifyHash(result.Value.Password);
 
-            return verified 
-                ? result 
+            return verified
+                ? result
                 : Result<UserEntity>.Failed(result.Error);
         }
 
@@ -172,6 +222,17 @@ namespace Template.Shared.Services
                 .Failed(new Error(new Records.Records.GuidId(key).ConversionError()));
         }
 
-        #endregion
+        private async Task<string> GetPublicKey()
+        {
+            var users = await GetAllByAsync();
+
+            var random = new Random();
+
+            var user = users[random.Next(users.Count)];
+
+            return user.PublicId.ToString();
+        }
+
+    #endregion
     }
 }

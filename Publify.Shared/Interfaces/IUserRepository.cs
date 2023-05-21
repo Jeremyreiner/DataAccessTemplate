@@ -7,13 +7,15 @@ namespace Template.Shared.Interfaces
 {
     public interface IUserRepository
     {
-        Task<Result<UserEntity>> AddAsync(UserEntity teacher);
+        Task<Result<UserEntity>> AddAsync(UserEntity user);
 
-        Task<Result<UserEntity>> UpdateAsync(UserEntity teacher);
+        Task<Result<UserEntity>> UpdateAsync(UserEntity user);
 
-        Task<Result<HttpStatusCode>> DeleteAsync(UserEntity teacher);
+        Task<Result<HttpStatusCode>> DeleteAsync(UserEntity user);
 
         Task<Result<UserEntity>> GetByAsync(string publicKey, Expression<Func<UserEntity, bool>> predicate);
+
+        Task<Result<UserEntity>> GetWithAsync(string publicKey, Expression<Func<UserEntity, bool>> predicate);
 
         Task<Result<List<UserEntity>>> GetListByAsync();
 

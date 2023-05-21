@@ -14,7 +14,9 @@ namespace Template.Shared.Extensions
                 Bio = entity.Bio,
                 Email = entity.Email,
                 CreatedOnDt = entity.CreatedOnDt,
-                LastUpdateOnDt = entity.LastUpdateOnDt
+                LastUpdateOnDt = entity.LastUpdateOnDt,
+                Followers = entity.Followers.Count,
+                Following = entity.Following.Count,
             };
 
         public static List<UserModel> ToModelList(this IEnumerable<UserEntity> list) =>

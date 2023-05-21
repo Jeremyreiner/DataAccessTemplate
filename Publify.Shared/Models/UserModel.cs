@@ -12,6 +12,10 @@ public class UserModel
 
     public string Email { get; set; } = string.Empty;
 
+    public int Followers { get; set; } = 0;
+    
+    public int Following { get; set; } = 0;
+
     public DateTime CreatedOnDt { get; set; } = DateTime.Now;
 
     public DateTime LastUpdateOnDt { get; set; } = DateTime.Now;

@@ -10,13 +10,24 @@ namespace Template.Database.Infrastructure.MySql
         {
             //TODO: Change from Dev
             //Database.EnsureDeleted();
-            //Database.EnsureCreated();
+            Database.EnsureCreated();
         }
 
         public DbSet<UserEntity> Teachers { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Configure the many-to-many relationship between User and UserFollow
+            modelBuilder.Entity<UserEntity>()
+                .HasMany(u => u.Followers)
+                .WithMany(u => u.Following)
+                .UsingEntity(j => j.ToTable("UserFollows"));
+
+            modelBuilder.Entity<UserEntity>()
+                .HasMany(u => u.Following)
+                .WithMany(u => u.Followers)
+                .UsingEntity(j => j.ToTable("UserFollows"));
+
             for (var i = 0; i < 10; i++)
             {
                 var teacher = new UserEntity

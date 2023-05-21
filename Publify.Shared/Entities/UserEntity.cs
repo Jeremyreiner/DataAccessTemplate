@@ -6,6 +6,11 @@ namespace Template.Shared.Entities
     [Table("Teachers")]
     public class UserEntity
     {
+        public UserEntity()
+        {
+            Followers = new HashSet<UserEntity>();
+            Following = new HashSet<UserEntity>();
+        }
 
         [Key]
         public Guid PrivateId { get; set; }
@@ -25,6 +30,10 @@ namespace Template.Shared.Entities
         public DateTime LastUpdateOnDt { get; set; } = DateTime.Now;
 
         public string Password { get; set; } = string.Empty;
+
+        public ICollection<UserEntity> Followers { get; set; }
+
+        public ICollection<UserEntity> Following { get; set; }
 
         [NotMapped] 
         public string FullName => $"{FirstName} {LastName}";

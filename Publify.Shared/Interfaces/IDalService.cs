@@ -27,7 +27,7 @@ namespace Template.Shared.Interfaces
         /// </summary>
         /// <param name="publicKey"></param>
         /// <returns>Result of type User</returns>
-        Task<Result<UserEntity>> UpdateAsync(string publicKey);
+        Task<Result<UserEntity>> UpdateAsync();
 
         #endregion
 
@@ -39,7 +39,7 @@ namespace Template.Shared.Interfaces
         /// </summary>
         /// <param name="publicKey"></param>
         /// <returns></returns>
-        Task<Result<HttpStatusCode>> DeleteAsync(string publicKey);
+        Task<Result<HttpStatusCode>> DeleteAsync();
 
         #endregion
 
@@ -52,7 +52,9 @@ namespace Template.Shared.Interfaces
         /// </summary>
         /// <param name="publicKey"></param>
         /// <returns>Result of type User</returns>
-        Task<Result<UserEntity>> GetByAsync(string publicKey);
+        Task<Result<UserEntity>> GetByAsync();
+
+        Task<Result<UserEntity>> GetWithAsync();
 
         #endregion
 
@@ -60,6 +62,12 @@ namespace Template.Shared.Interfaces
 
         Task<List<UserEntity>> GetAllByAsync();
 
+
+        #endregion
+
+        #region Subscription
+
+        Task<Result<UserEntity>> SubscribeToAsync();
 
         #endregion
 
