@@ -10,50 +10,17 @@ namespace Template.Shared.Results
 
         private string GetQuote() => "\n" + _Chicken[_Random.Next(_Chicken.Count)] + ".\n";
 
-        private string _Message;
-
-        public NotFoundException NotFound { get; set; }
-
-        public DuplicateException Duplicated { get; set; }
-
-        public NotImplementedException NotImplemented { get; set; }
-
-        public GuidException InvalidGuid { get; set; }
-
+        public string Message;
         public HttpStatusCode Code { get; set; }
 
         public static readonly Error None = new();
 
-        public Error() => (_Message, Code) = (GetQuote(), HttpStatusCode.OK);
+        public Error() => (Message, Code) = (GetQuote(), HttpStatusCode.OK);
 
         public Error(string message)
         {
-            _Message = message;
+            Message = message;
             Code = HttpStatusCode.OK;
-        }
-
-        public Error(GuidException invalid) : this()
-        {
-            InvalidGuid = invalid;
-            Code = HttpStatusCode.BadRequest;
-        }
-
-        public Error(NotFoundException notFound) : this()
-        {
-            NotFound = notFound;
-            Code = HttpStatusCode.NotFound;
-        }
-
-        public Error(DuplicateException duplicated) : this()
-        {
-            Duplicated = duplicated;
-            Code = HttpStatusCode.Ambiguous;
-        }
-
-        public Error(NotImplementedException notImplemented) : this()
-        {
-            NotImplemented = notImplemented;
-            Code = HttpStatusCode.NotImplemented;
         }
 
         public Error(HttpStatusCode code) : this()

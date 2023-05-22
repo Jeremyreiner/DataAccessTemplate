@@ -55,8 +55,7 @@ namespace Template.Database.Repositories
             return post is not null
                 ? Result<PostEntity>.Success(post)
                 : Result<PostEntity>
-                    .Failed(new Error(new Records.PublicId(Guid.Parse(publicKey))
-                    .NotFound()));
+                    .Failed(new Error(HttpStatusCode.NotFound));
         }
 
         public async Task<Result<PostEntity>> GetWithAsync(string publicKey, Expression<Func<PostEntity, bool>> predicate)
@@ -69,8 +68,7 @@ namespace Template.Database.Repositories
             return post is not null
                 ? Result<PostEntity>.Success(post)
                 : Result<PostEntity>
-                    .Failed(new Error(new Records.PublicId(Guid.Parse(publicKey))
-                    .NotFound()));
+                    .Failed(new Error(HttpStatusCode.NotFound));
         }
 
         public async Task<Result<List<PostEntity>>> GetListWithAsync()
@@ -81,7 +79,8 @@ namespace Template.Database.Repositories
 
             return posts.Any()
                 ? Result<List<PostEntity>>.Success(posts)
-                : Result<List<PostEntity>>.Failed(new Error(HttpStatusCode.NotFound));
+                : Result<List<PostEntity>>
+                    .Failed(new Error(HttpStatusCode.NotFound));
         }
 
         public async Task<Result<List<PostEntity>>> GetListByAsync()
@@ -90,11 +89,8 @@ namespace Template.Database.Repositories
 
             return posts.Any()
                 ? Result<List<PostEntity>>.Success(posts)
-                : Result<List<PostEntity>>.Failed(new Error(HttpStatusCode.NotFound));
+                : Result<List<PostEntity>>
+                    .Failed(new Error(HttpStatusCode.NotFound));
         }
-
-
-        //public async Task<TeacherEntity?> GetByIncludedAsync<TEntity>(Expression<Func<TeacherEntity, bool>> predicate, Expression<Func<TeacherEntity, TEntity>> selector) where TEntity : class? =>
-        //    await _DbContext.Users.Include(selector).FirstOrDefaultAsync(predicate);
     }
 }

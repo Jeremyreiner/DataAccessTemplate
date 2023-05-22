@@ -1,7 +1,9 @@
 ﻿using System.Net;
 using Microsoft.Extensions.Logging;
+using Publify.Shared.Exceptions;
 using Publify.Shared.Services;
 using Template.Shared.Entities;
+using Template.Shared.Exceptions;
 using Template.Shared.Extensions;
 using Template.Shared.Interfaces;
 using Template.Shared.Interfaces.Repositories;
@@ -48,7 +50,7 @@ namespace Template.Shared.Services
             if (!valid.IsSuccess)
             {
                 return Result<UserEntity>
-                    .Failed(new Error(valid.Error.InvalidGuid));
+                    .Failed(new Error(HttpStatusCode.Ambiguous));
             }
 
             var result = await _UserRepository.GetByAsync(user.PublicId.ToString(), u => u.PublicId == valid.Value);
@@ -127,10 +129,7 @@ namespace Template.Shared.Services
                 return await _UserRepository.DeleteAsync(result.Value);
             }
 
-            _Logger.LogTrace(result
-                .Error
-                .NotFound
-                .Message);
+            _Logger.LogTrace(result.Error.Code.ToString());
 
             return Result<HttpStatusCode>.Deleted();
         }
@@ -144,10 +143,7 @@ namespace Template.Shared.Services
                 return await _PostRespository.DeleteAsync(result.Value);
             }
 
-            _Logger.LogTrace(result
-                .Error
-                .NotFound
-                .Message);
+            _Logger.LogTrace(result.Error.Code.ToString());
 
             return Result<HttpStatusCode>.Deleted();
         }
@@ -165,7 +161,7 @@ namespace Template.Shared.Services
             if (!valid.IsSuccess)
             {
                 return Result<UserEntity>
-                    .Failed(new Error(valid.Error.InvalidGuid));
+                    .Failed(new Error(HttpStatusCode.Ambiguous));
             }
 
             return await _UserRepository.GetByAsync(publicKey, u => u.PublicId == valid.Value);
@@ -180,7 +176,7 @@ namespace Template.Shared.Services
             if (!valid.IsSuccess)
             {
                 return Result<UserEntity>
-                    .Failed(new Error(valid.Error.InvalidGuid));
+                    .Failed(new Error(HttpStatusCode.BadRequest));
             }
 
             return await _UserRepository.GetWithAsync(publicKey, u => u.PublicId == valid.Value);
@@ -195,7 +191,7 @@ namespace Template.Shared.Services
             if (!valid.IsSuccess)
             {
                 return Result<PostEntity>
-                    .Failed(new Error(valid.Error.InvalidGuid));
+                    .Failed(new Error(HttpStatusCode.BadRequest));
             }
 
             return await _PostRespository.GetByAsync(publicKey, u => u.PublicId == valid.Value);
@@ -210,7 +206,7 @@ namespace Template.Shared.Services
             if (!valid.IsSuccess)
             {
                 return Result<PostEntity>
-                    .Failed(new Error(valid.Error.InvalidGuid));
+                    .Failed(new Error(HttpStatusCode.BadRequest));
             }
 
             return await _PostRespository.GetWithAsync(publicKey, u => u.PublicId == valid.Value);
@@ -327,7 +323,7 @@ namespace Template.Shared.Services
             }
 
             return Result<Guid>
-                .Failed(new Error(new Records.Records.GuidId(key).ConversionError()));
+                .Failed(new Error(HttpStatusCode.BadRequest));
         }
 
         private async Task<string> GetPublicKey()
@@ -359,10 +355,10 @@ namespace Template.Shared.Services
 
             throw error.Code switch
             {
-                HttpStatusCode.BadRequest => error.InvalidGuid,
-                HttpStatusCode.NotImplemented => error.NotImplemented,
-                HttpStatusCode.Ambiguous => error.Duplicated,
-                HttpStatusCode.NotFound => error.NotFound,
+                HttpStatusCode.BadRequest => new GuidException(error.Message),
+                HttpStatusCode.NotImplemented => new NotImplementedException(error.Message),
+                HttpStatusCode.Ambiguous => new DuplicateException(error.Message),
+                HttpStatusCode.NotFound => new NotFoundException(error.Message),
                 _ => new Exception()
             };
         }

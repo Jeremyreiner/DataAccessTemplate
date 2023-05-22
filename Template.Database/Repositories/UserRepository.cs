@@ -55,8 +55,7 @@ namespace Template.Database.Repositories
             return user is not null 
                 ? Result<UserEntity>.Success(user) 
                 : Result<UserEntity>
-                    .Failed(new Error(new Records.PublicId(Guid.Parse(publicKey))
-                    .NotFound()));
+                    .Failed(new Error(HttpStatusCode.NotFound));
         }
 
 
@@ -71,8 +70,7 @@ namespace Template.Database.Repositories
             return user is not null
                 ? Result<UserEntity>.Success(user)
                 : Result<UserEntity>
-                    .Failed(new Error(new Records.PublicId(Guid.Parse(publicKey))
-                    .NotFound()));
+                    .Failed(new Error(HttpStatusCode.NotFound));
         }
 
         public async Task<Result<List<UserEntity>>> GetListWithAsync()
