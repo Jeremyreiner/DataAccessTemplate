@@ -7,6 +7,7 @@ using Template.Shared.Exceptions;
 using Template.Shared.Extensions;
 using Template.Shared.Interfaces;
 using Template.Shared.Interfaces.Repositories;
+using Template.Shared.Models;
 using Template.Shared.Results;
 
 namespace Template.Shared.Services
@@ -250,7 +251,10 @@ namespace Template.Shared.Services
             var user2 = users[random.Next(users.Count)];
 
             if (user1.PrivateId == user2.PrivateId)
-                return Result<UserEntity>.Failed(new Error(HttpStatusCode.Ambiguous));
+            {
+                return Result<UserEntity>
+                    .Failed(new Error(HttpStatusCode.Ambiguous));
+            }
 
             if (user1.Followers.Contains(user2))
             {
@@ -266,11 +270,11 @@ namespace Template.Shared.Services
 
         public async Task<Result<PostEntity>> FollowPostAsync()
         {
+            var random = new Random();
+
             var users = await GetAllByAsync();
 
             var posts = await GetAllPostsByAsync();
-
-            var random = new Random();
 
             var user = users[random.Next(users.Count)];
 
@@ -306,7 +310,29 @@ namespace Template.Shared.Services
 
             return verified
                 ? result
-                : Result<UserEntity>.Failed(result.Error);
+                : Result<UserEntity>
+                    .Failed(new Error(HttpStatusCode.Unauthorized));
+        }
+
+        public async Task<Result<UserEntity>> ChangePassword(ChangePasswordModel model)
+        {
+            if (model.ConfirmedPassword != model.NewPassword)
+            {
+                return Result<UserEntity>
+                    .Failed(new Error(HttpStatusCode.PreconditionFailed));
+            }
+
+            var verified = await Login(model.Email, model.Password);
+
+            if (!verified.IsSuccess)
+            {
+                return verified;
+            }
+
+            verified.Value.Password = model.NewPassword.Hash();
+            verified.Value.LastUpdateOnDt = DateTime.Now;
+
+            return await _UserRepository.UpdateAsync(verified.Value);
         }
 
         #endregion
@@ -359,6 +385,8 @@ namespace Template.Shared.Services
                 HttpStatusCode.NotImplemented => new NotImplementedException(error.Message),
                 HttpStatusCode.Ambiguous => new DuplicateException(error.Message),
                 HttpStatusCode.NotFound => new NotFoundException(error.Message),
+                HttpStatusCode.Unauthorized => new UnauthorizedException(error.Message),
+                HttpStatusCode.PreconditionFailed => new UnauthorizedException(error.Message),
                 _ => new Exception()
             };
         }

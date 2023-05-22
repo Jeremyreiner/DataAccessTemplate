@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Template.Shared.Entities;
+using Template.Shared.Models;
 using Template.Shared.Results;
 
 namespace Template.Shared.Interfaces
@@ -130,10 +131,20 @@ namespace Template.Shared.Interfaces
         /// <returns>Result of type User</returns>
         Task<Result<UserEntity>> Login(string email, string password);
 
+        /// <summary>
+        /// Verifies that the entered New password, and confirmed new password match,
+        /// Verifies that the original password, is indeed the original password,
+        /// if both these checks pass, then the new password is updated and the user is saved
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="model"></param>
+        /// <returns>Result of type User</returns>
+        Task<Result<UserEntity>> ChangePassword(ChangePasswordModel model);
+
         #endregion
 
         #region Error Check
-        
+
         void CheckForThrow(Error error);
 
         #endregion

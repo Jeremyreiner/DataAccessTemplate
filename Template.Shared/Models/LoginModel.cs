@@ -1,4 +1,4 @@
-﻿namespace Publify.Shared.Models
+﻿namespace Template.Shared.Models
 {
     public class LoginModel
     {
@@ -10,6 +10,7 @@
     public class ChangePasswordModel : LoginModel
     {
         public string ConfirmedPassword { get; set; } = string.Empty;
+
         public string NewPassword { get; set; } = string.Empty;
     }
 }

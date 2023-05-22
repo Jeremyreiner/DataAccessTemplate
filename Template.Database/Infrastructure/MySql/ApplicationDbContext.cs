@@ -35,7 +35,7 @@ namespace Template.Database.Infrastructure.MySql
                 .WithMany(u => u.Posts)
                 .UsingEntity(j => j.ToTable("UserPosts"));
 
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 100; i++)
             {
                 var user = new UserEntity
                 {
