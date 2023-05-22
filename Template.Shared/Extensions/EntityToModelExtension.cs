@@ -19,6 +19,22 @@ namespace Template.Shared.Extensions
                 Following = entity.Following.Count,
             };
 
+        public static PostModel ToModel(this PostEntity entity) =>
+            new()
+            {
+                PublicId = entity.PublicId.ToString(),
+                Description = entity.Description,
+                CreatedOnDt = entity.CreatedOnDt,
+                Follows = entity.Follows.Count,
+            };
+
+        public static List<PostModel> ToModelList(this IEnumerable<PostEntity> list) =>
+            list
+                .Select(entity => entity
+                .ToModel())
+                .ToList();
+
+
         public static List<UserModel> ToModelList(this IEnumerable<UserEntity> list) =>
             list
                 .Select(entity => entity

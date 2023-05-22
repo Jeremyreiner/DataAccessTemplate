@@ -18,7 +18,7 @@ namespace Template.Shared.Results
 
         public NotImplementedException NotImplemented { get; set; }
 
-        public GuidException InvalidConversion { get; set; }
+        public GuidException InvalidGuid { get; set; }
 
         public HttpStatusCode Code { get; set; }
 
@@ -34,7 +34,7 @@ namespace Template.Shared.Results
 
         public Error(GuidException invalid) : this()
         {
-            InvalidConversion = invalid;
+            InvalidGuid = invalid;
             Code = HttpStatusCode.BadRequest;
         }
 
@@ -54,6 +54,11 @@ namespace Template.Shared.Results
         {
             NotImplemented = notImplemented;
             Code = HttpStatusCode.NotImplemented;
+        }
+
+        public Error(HttpStatusCode code) : this()
+        {
+            Code = code;
         }
 
         private readonly List<string> _Chicken = new()

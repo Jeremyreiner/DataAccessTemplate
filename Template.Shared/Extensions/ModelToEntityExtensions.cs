@@ -16,5 +16,13 @@ namespace Template.Shared.Extensions
                 CreatedOnDt = model.CreatedOnDt,
                 LastUpdateOnDt = model.LastUpdateOnDt,
             };
+
+        public static PostEntity ToEntity(this PostModel model) =>
+            new()
+            {
+                PublicId = Guid.Parse(model.PublicId),
+                Description = model.Description,
+                CreatedOnDt = model.CreatedOnDt,
+            };
     }
 }

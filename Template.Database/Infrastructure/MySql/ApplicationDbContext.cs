@@ -13,7 +13,9 @@ namespace Template.Database.Infrastructure.MySql
             Database.EnsureCreated();
         }
 
-        public DbSet<UserEntity> Teachers { get; set; } = null!;
+        public DbSet<UserEntity> Users { get; set; } = null!;
+        
+        public DbSet<PostEntity> Posts { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,19 +30,26 @@ namespace Template.Database.Infrastructure.MySql
                 .WithMany(u => u.Followers)
                 .UsingEntity(j => j.ToTable("UserFollows"));
 
+            modelBuilder.Entity<PostEntity>()
+                .HasMany(p => p.Follows)
+                .WithMany(u => u.Posts)
+                .UsingEntity(j => j.ToTable("UserPosts"));
+
             for (var i = 0; i < 10; i++)
             {
-                var teacher = new UserEntity
+                var user = new UserEntity
                 {
                     PrivateId = Guid.NewGuid(),
                     PublicId = Guid.NewGuid(),
-                    FirstName = $"{Faker.Name.First()}",
-                    LastName = $"{Faker.Name.Last()}",
-                    Email = $"t{i}@gmail.com",
-                    Password = "qwerty".Hash()
+                    FirstName = Faker.Name.First(),
+                    LastName = Faker.Name.Last(),
+                    Bio = Faker.Lorem.Paragraph(),
+                    Email = Faker.Internet.Email(),
+                    Password = "qwerty".Hash(),
+                    CreatedOnDt = DateTime.Now
                 };
 
-                modelBuilder.Entity<UserEntity>().HasData(teacher);
+                modelBuilder.Entity<UserEntity>().HasData(user);
             }
         }
     }

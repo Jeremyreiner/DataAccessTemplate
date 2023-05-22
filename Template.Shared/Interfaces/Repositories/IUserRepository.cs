@@ -3,7 +3,7 @@ using System.Net;
 using Template.Shared.Entities;
 using Template.Shared.Results;
 
-namespace Template.Shared.Interfaces
+namespace Template.Shared.Interfaces.Repositories
 {
     public interface IUserRepository
     {
@@ -18,6 +18,8 @@ namespace Template.Shared.Interfaces
         Task<Result<UserEntity>> GetWithAsync(string publicKey, Expression<Func<UserEntity, bool>> predicate);
 
         Task<Result<List<UserEntity>>> GetListByAsync();
+
+        Task<Result<List<UserEntity>>> GetListWithAsync();
 
         //Task<Result<TeacherEntity>> GetByIncludedAsync<TEntity>(string publicKey);
     }

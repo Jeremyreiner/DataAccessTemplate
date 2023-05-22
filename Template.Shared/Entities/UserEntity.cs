@@ -10,6 +10,8 @@ namespace Template.Shared.Entities
         {
             Followers = new HashSet<UserEntity>();
             Following = new HashSet<UserEntity>();
+            Posts = new HashSet<PostEntity>();
+
         }
 
         [Key]
@@ -34,6 +36,8 @@ namespace Template.Shared.Entities
         public ICollection<UserEntity> Followers { get; set; }
 
         public ICollection<UserEntity> Following { get; set; }
+
+        public ICollection<PostEntity> Posts { get; set; }
 
         [NotMapped] 
         public string FullName => $"{FirstName} {LastName}";

@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32811.315
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template", "Publify\Template.csproj", "{CD72C7FF-A1E9-45E7-BD9F-F8670856FB9D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Database", "Publify.Database\Template.Database.csproj", "{DF729B58-2723-4A54-8D3B-C647000CCFD9}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{1EEEF012-E726-4D01-AEAF-CC00D47A2155}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Shared", "Publify.Shared\Template.Shared.csproj", "{72078225-D3A8-45B1-864F-31DB5BB83081}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Shared", "Template.Shared\Template.Shared.csproj", "{2327F2A9-EFB7-4507-9A87-AAB206F7E1EC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Database", "Template.Database\Template.Database.csproj", "{22D3C95C-B358-49F9-B474-4CFC94D4C6FE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template", "Template\Template.csproj", "{3289F916-414E-48D2-986B-0D915E15B3D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,25 +17,25 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CD72C7FF-A1E9-45E7-BD9F-F8670856FB9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CD72C7FF-A1E9-45E7-BD9F-F8670856FB9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CD72C7FF-A1E9-45E7-BD9F-F8670856FB9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CD72C7FF-A1E9-45E7-BD9F-F8670856FB9D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DF729B58-2723-4A54-8D3B-C647000CCFD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DF729B58-2723-4A54-8D3B-C647000CCFD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DF729B58-2723-4A54-8D3B-C647000CCFD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DF729B58-2723-4A54-8D3B-C647000CCFD9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{72078225-D3A8-45B1-864F-31DB5BB83081}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{72078225-D3A8-45B1-864F-31DB5BB83081}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{72078225-D3A8-45B1-864F-31DB5BB83081}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{72078225-D3A8-45B1-864F-31DB5BB83081}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2327F2A9-EFB7-4507-9A87-AAB206F7E1EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2327F2A9-EFB7-4507-9A87-AAB206F7E1EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2327F2A9-EFB7-4507-9A87-AAB206F7E1EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2327F2A9-EFB7-4507-9A87-AAB206F7E1EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22D3C95C-B358-49F9-B474-4CFC94D4C6FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22D3C95C-B358-49F9-B474-4CFC94D4C6FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22D3C95C-B358-49F9-B474-4CFC94D4C6FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22D3C95C-B358-49F9-B474-4CFC94D4C6FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3289F916-414E-48D2-986B-0D915E15B3D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3289F916-414E-48D2-986B-0D915E15B3D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3289F916-414E-48D2-986B-0D915E15B3D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3289F916-414E-48D2-986B-0D915E15B3D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{DF729B58-2723-4A54-8D3B-C647000CCFD9} = {1EEEF012-E726-4D01-AEAF-CC00D47A2155}
-		{72078225-D3A8-45B1-864F-31DB5BB83081} = {1EEEF012-E726-4D01-AEAF-CC00D47A2155}
+		{2327F2A9-EFB7-4507-9A87-AAB206F7E1EC} = {1EEEF012-E726-4D01-AEAF-CC00D47A2155}
+		{22D3C95C-B358-49F9-B474-4CFC94D4C6FE} = {1EEEF012-E726-4D01-AEAF-CC00D47A2155}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8AC69606-CAFB-47C4-A1E8-16B60701D4D2}

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Template.Shared.Extensions;
 using Template.Shared.Interfaces;
 using Template.Shared.Models;
-using Template.Shared.Extensions;
+using Template.Shared.Results;
 
 namespace Template.Controllers
 {
@@ -22,23 +22,19 @@ namespace Template.Controllers
         [HttpPost("Create")]
         public async Task<UserModel> PostAsync()
         {
-            var response = await _DalService.CreateAsync();
-            
-            return response.Value.ToModel();
+            var result = await _DalService.CreateAsync();
+
+            return result.Value.ToModel();
         }
 
         [HttpPost("LogIn")]
         public async Task<UserModel> Login(string email, string password)
         {
-            var response = await _DalService.Login(email, password);
+            var result = await _DalService.Login(email, password);
 
-            if (response.IsSuccess)
-            {
-                return response.Value.ToModel();
-            }
+            _DalService.CheckForThrow(result.Error);
 
-            throw response.Error.NotFound;
-
+            return result.Value.ToModel();
         }
 
         [HttpGet]
@@ -46,12 +42,9 @@ namespace Template.Controllers
         {
             var result = await _DalService.GetByAsync();
 
-            if (result.IsSuccess)
-            {
-                return result.Value.ToModel();
-            }
+            _DalService.CheckForThrow(result.Error);
 
-            throw result.Error.NotFound;
+            return result.Value.ToModel();
         }
 
         [HttpGet("Followers")]
@@ -59,12 +52,9 @@ namespace Template.Controllers
         {
             var result = await _DalService.GetWithAsync();
 
-            if (result.IsSuccess)
-            {
-                return result.Value.Followers.ToModelList();
-            }
+            _DalService.CheckForThrow(result.Error);
 
-            throw result.Error.NotFound;
+            return result.Value.Followers.ToModelList();
         }
 
         [HttpGet("Following")]
@@ -72,12 +62,9 @@ namespace Template.Controllers
         {
             var result = await _DalService.GetWithAsync();
 
-            if (result.IsSuccess)
-            {
-                return result.Value.Following.ToModelList();
-            }
+            _DalService.CheckForThrow(result.Error);
 
-            throw result.Error.NotFound;
+            return result.Value.Following.ToModelList();
         }
 
 
@@ -98,11 +85,11 @@ namespace Template.Controllers
         }
 
         [HttpPut("SubscribeTo")]
-        public async Task<UserModel> Subscribe()
+        public async Task<bool> Subscribe()
         {
             var response = await _DalService.SubscribeToAsync();
 
-            return response.Value.ToModel();
+            return response.IsSuccess;
         }
 
 

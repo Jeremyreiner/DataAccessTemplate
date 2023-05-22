@@ -19,15 +19,27 @@ namespace Template.Shared.Interfaces
         /// <returns>Result of type User</returns>
         Task<Result<UserEntity>> CreateAsync();
 
+        /// <summary>
+        /// Generates a new post object using faker data
+        /// </summary>
+        /// <returns></returns>
+        Task<Result<PostEntity>> CreatePostAsync();
+
         #endregion
 
         #region Update
 
         /// <summary>
-        /// Updates new user data using Faker randomly for selected user...
+        /// Updates new user data using Faker randomly for selected user
         /// </summary>
         /// <returns>Result of type User</returns>
         Task<Result<UserEntity>> UpdateAsync();
+
+        /// <summary>
+        /// Updates post data using Faker for random user
+        /// </summary>
+        /// <returns></returns>
+        Task<Result<PostEntity>> UpdatePostAsync();
 
         #endregion
 
@@ -38,6 +50,12 @@ namespace Template.Shared.Interfaces
         /// </summary>
         /// <returns>HttpStatusResponse</returns>
         Task<Result<HttpStatusCode>> DeleteAsync();
+
+        /// <summary>
+        /// Deletes entity from DB
+        /// </summary>
+        /// <returns></returns>
+        Task<Result<HttpStatusCode>> DeletePostAsync();
 
         #endregion
 
@@ -55,6 +73,18 @@ namespace Template.Shared.Interfaces
         /// <returns>Result of type User</returns>
         Task<Result<UserEntity>> GetWithAsync();
 
+        /// <summary>
+        /// Gets post randomly from DB
+        /// </summary>
+        /// <returns></returns>
+        Task<Result<PostEntity>> GetPostByAsync();
+
+        /// <summary>
+        /// Gets post with follows randomly from DB
+        /// </summary>
+        /// <returns></returns>
+        Task<Result<PostEntity>> GetPostWithAsync();
+
         #endregion
 
         #region Get AllBy
@@ -65,16 +95,27 @@ namespace Template.Shared.Interfaces
         /// <returns>List of Users</returns>
         Task<List<UserEntity>> GetAllByAsync();
 
+        /// <summary>
+        /// Gets all posts from Db
+        /// </summary>
+        /// <returns></returns>
+        Task<List<PostEntity>> GetAllPostsByAsync();
 
         #endregion
 
         #region Subscription
 
         /// <summary>
-        /// Using Faker data, either a entity will subscribe to or unsubscribe from a randomly selected user entity.
+        /// Either a entity will subscribe to or unsubscribe from a randomly selected user entity.
         /// </summary>
         /// <returns>Result of type User</returns>
         Task<Result<UserEntity>> SubscribeToAsync();
+
+        /// <summary>
+        /// Randomly selects post and user. If the post has the user, the user is unfollowed, otherwise, followed
+        /// </summary>
+        /// <returns></returns>
+        Task<Result<PostEntity>> FollowPostAsync();
 
         #endregion
 
@@ -88,6 +129,12 @@ namespace Template.Shared.Interfaces
         /// <param name="password"></param>
         /// <returns>Result of type User</returns>
         Task<Result<UserEntity>> Login(string email, string password);
+
+        #endregion
+
+        #region Error Check
+        
+        void CheckForThrow(Error error);
 
         #endregion
     }

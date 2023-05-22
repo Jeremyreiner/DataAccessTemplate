@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Publify.Shared.Services;
 using Template.Shared.Entities;
-using Template.Shared.Exceptions;
 using Template.Shared.Extensions;
 using Template.Shared.Interfaces;
+using Template.Shared.Interfaces.Repositories;
 using Template.Shared.Results;
 
 namespace Template.Shared.Services
@@ -13,14 +13,18 @@ namespace Template.Shared.Services
     {
         readonly IUserRepository _UserRepository;
 
+        private readonly IPostRepository _PostRespository;
+
         readonly ILogger<DalService> _Logger;
 
         public DalService(
             IUserRepository userRepository,
-            ILogger<DalService> logger)
+            ILogger<DalService> logger, 
+            IPostRepository postRespository)
         {
             _UserRepository = userRepository;
             _Logger = logger;
+            _PostRespository = postRespository;
         }
 
         #region CREATE ENTITY
@@ -44,20 +48,36 @@ namespace Template.Shared.Services
             if (!valid.IsSuccess)
             {
                 return Result<UserEntity>
-                    .Failed(new Error(valid.Error.InvalidConversion));
+                    .Failed(new Error(valid.Error.InvalidGuid));
             }
 
             var result = await _UserRepository.GetByAsync(user.PublicId.ToString(), u => u.PublicId == valid.Value);
 
-            if (result.IsSuccess)
-            {
-                throw result
-                    .Value
-                    .PublicRecord
-                    .DuplicatedEntry();
-            }
+            CheckForThrow(result.Error);
 
             return await _UserRepository.AddAsync(user);
+        }
+
+        public async Task<Result<PostEntity>> CreatePostAsync()
+        {
+            var publicKey = await GetPublicKey();
+
+            var result = await _UserRepository.GetByAsync(publicKey, u => u.PublicId == Guid.Parse(publicKey));
+
+            CheckForThrow(result.Error);
+
+            PostEntity post = new()
+            {
+                PrivateId = Guid.NewGuid(),
+                PublicId = Guid.NewGuid(),
+                UserEntityId = Guid.Parse(publicKey),
+                Description = Faker.Lorem.Sentence(),
+                CreatedOnDt = DateTime.Now,
+                LastUpdateOnDt = DateTime.Now,
+                Follows = new List<UserEntity>()
+            };
+
+            return await _PostRespository.AddAsync(post);
         }
 
         #endregion
@@ -68,12 +88,7 @@ namespace Template.Shared.Services
         {
             var result = await GetByAsync();
 
-            if (!result.IsSuccess)
-            {
-                throw result
-                    .Error
-                    .InvalidConversion;
-            }
+            CheckForThrow(result.Error);
 
             var user = result.Value;
 
@@ -83,6 +98,20 @@ namespace Template.Shared.Services
             user.LastUpdateOnDt = DateTime.Now;
 
             return await _UserRepository.UpdateAsync(user);
+        }
+
+        public async Task<Result<PostEntity>> UpdatePostAsync()
+        {
+            var result = await GetPostByAsync();
+
+            CheckForThrow(result.Error);
+
+            var post = result.Value;
+
+            post.Description = Faker.Lorem.Sentence();
+            post.LastUpdateOnDt = DateTime.Now;
+
+            return await _PostRespository.UpdateAsync(post);
         }
 
         #endregion
@@ -106,6 +135,23 @@ namespace Template.Shared.Services
             return Result<HttpStatusCode>.Deleted();
         }
 
+        public async Task<Result<HttpStatusCode>> DeletePostAsync()
+        {
+            var result = await GetPostByAsync();
+
+            if (result.IsSuccess)
+            {
+                return await _PostRespository.DeleteAsync(result.Value);
+            }
+
+            _Logger.LogTrace(result
+                .Error
+                .NotFound
+                .Message);
+
+            return Result<HttpStatusCode>.Deleted();
+        }
+
         #endregion
 
         #region GetBy
@@ -119,7 +165,7 @@ namespace Template.Shared.Services
             if (!valid.IsSuccess)
             {
                 return Result<UserEntity>
-                    .Failed(new Error(valid.Error.InvalidConversion));
+                    .Failed(new Error(valid.Error.InvalidGuid));
             }
 
             return await _UserRepository.GetByAsync(publicKey, u => u.PublicId == valid.Value);
@@ -134,10 +180,40 @@ namespace Template.Shared.Services
             if (!valid.IsSuccess)
             {
                 return Result<UserEntity>
-                    .Failed(new Error(valid.Error.InvalidConversion));
+                    .Failed(new Error(valid.Error.InvalidGuid));
             }
 
             return await _UserRepository.GetWithAsync(publicKey, u => u.PublicId == valid.Value);
+        }
+
+        public async Task<Result<PostEntity>> GetPostByAsync()
+        {
+            var publicKey = await GetPostPublicKey();
+
+            var valid = ValidateGuid(publicKey);
+
+            if (!valid.IsSuccess)
+            {
+                return Result<PostEntity>
+                    .Failed(new Error(valid.Error.InvalidGuid));
+            }
+
+            return await _PostRespository.GetByAsync(publicKey, u => u.PublicId == valid.Value);
+        }
+
+        public async Task<Result<PostEntity>> GetPostWithAsync()
+        {
+            var publicKey = await GetPostPublicKey();
+
+            var valid = ValidateGuid(publicKey);
+
+            if (!valid.IsSuccess)
+            {
+                return Result<PostEntity>
+                    .Failed(new Error(valid.Error.InvalidGuid));
+            }
+
+            return await _PostRespository.GetWithAsync(publicKey, u => u.PublicId == valid.Value);
         }
 
         #endregion
@@ -146,17 +222,22 @@ namespace Template.Shared.Services
 
         public async Task<List<UserEntity>> GetAllByAsync()
         {
-            var result = await _UserRepository.GetListByAsync();
+            var result = await _UserRepository.GetListWithAsync();
 
-            if (!result.IsSuccess)
-            {
-                throw result
-                    .Error
-                    .NotFound;
-            }
+            CheckForThrow(result.Error);
 
             return result.Value;
         }
+
+        public async Task<List<PostEntity>> GetAllPostsByAsync()
+        {
+            var result = await _PostRespository.GetListWithAsync();
+
+            CheckForThrow(result.Error);
+
+            return result.Value;
+        }
+
 
         #endregion
 
@@ -172,6 +253,9 @@ namespace Template.Shared.Services
 
             var user2 = users[random.Next(users.Count)];
 
+            if (user1.PrivateId == user2.PrivateId)
+                return Result<UserEntity>.Failed(new Error(HttpStatusCode.Ambiguous));
+
             if (user1.Followers.Contains(user2))
             {
                 user1.Followers.Remove(user2);
@@ -182,6 +266,30 @@ namespace Template.Shared.Services
             }
 
             return await _UserRepository.UpdateAsync(user1);
+        }
+
+        public async Task<Result<PostEntity>> FollowPostAsync()
+        {
+            var users = await GetAllByAsync();
+
+            var posts = await GetAllPostsByAsync();
+
+            var random = new Random();
+
+            var user = users[random.Next(users.Count)];
+
+            var post = posts[random.Next(posts.Count)];
+
+            if (post.Follows.Contains(user))
+            {
+                post.Follows.Remove(user);
+            }
+            else
+            {
+                post.Follows.Add(user);
+            }
+
+            return await _PostRespository.UpdateAsync(post);
         }
 
         #endregion
@@ -231,6 +339,32 @@ namespace Template.Shared.Services
             var user = users[random.Next(users.Count)];
 
             return user.PublicId.ToString();
+        }
+
+        private async Task<string> GetPostPublicKey()
+        {
+            var posts = await GetAllPostsByAsync();
+
+            var random = new Random();
+
+            var post  = posts[random.Next(posts.Count)];
+
+            return post.PublicId.ToString();
+        }
+
+        public void CheckForThrow(Error error)
+        {
+            if (error.Code == HttpStatusCode.OK) 
+                return;
+
+            throw error.Code switch
+            {
+                HttpStatusCode.BadRequest => error.InvalidGuid,
+                HttpStatusCode.NotImplemented => error.NotImplemented,
+                HttpStatusCode.Ambiguous => error.Duplicated,
+                HttpStatusCode.NotFound => error.NotFound,
+                _ => new Exception()
+            };
         }
 
     #endregion
