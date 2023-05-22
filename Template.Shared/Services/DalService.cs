@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Publify.Shared.Exceptions;
 using Publify.Shared.Services;
@@ -46,15 +47,18 @@ namespace Template.Shared.Services
                 CreatedOnDt = DateTime.Now
             };
 
+            //TODO Check this validation
             var valid = ValidateGuid(user.PublicId.ToString());
 
             if (!valid.IsSuccess)
             {
                 return Result<UserEntity>
-                    .Failed(new Error(HttpStatusCode.Ambiguous));
+                    .Failed(valid.Error);
             }
 
-            var result = await _UserRepository.GetByAsync(user.PublicId.ToString(), u => u.PublicId == valid.Value);
+            var result = await _UserRepository.GetByAsync(
+                    user.PublicId.ToString(), 
+                    u => u.PublicId == valid.Value);
 
             CheckForThrow(result.Error);
 
@@ -162,7 +166,7 @@ namespace Template.Shared.Services
             if (!valid.IsSuccess)
             {
                 return Result<UserEntity>
-                    .Failed(new Error(HttpStatusCode.Ambiguous));
+                    .Failed(valid.Error);
             }
 
             return await _UserRepository.GetByAsync(publicKey, u => u.PublicId == valid.Value);
@@ -177,7 +181,7 @@ namespace Template.Shared.Services
             if (!valid.IsSuccess)
             {
                 return Result<UserEntity>
-                    .Failed(new Error(HttpStatusCode.BadRequest));
+                    .Failed(valid.Error);
             }
 
             return await _UserRepository.GetWithAsync(publicKey, u => u.PublicId == valid.Value);
@@ -192,7 +196,7 @@ namespace Template.Shared.Services
             if (!valid.IsSuccess)
             {
                 return Result<PostEntity>
-                    .Failed(new Error(HttpStatusCode.BadRequest));
+                    .Failed(valid.Error);
             }
 
             return await _PostRespository.GetByAsync(publicKey, u => u.PublicId == valid.Value);
@@ -207,7 +211,7 @@ namespace Template.Shared.Services
             if (!valid.IsSuccess)
             {
                 return Result<PostEntity>
-                    .Failed(new Error(HttpStatusCode.BadRequest));
+                    .Failed(valid.Error);
             }
 
             return await _PostRespository.GetWithAsync(publicKey, u => u.PublicId == valid.Value);
@@ -349,7 +353,7 @@ namespace Template.Shared.Services
             }
 
             return Result<Guid>
-                .Failed(new Error(HttpStatusCode.BadRequest));
+                .Failed(new Error(HttpStatusCode.UnprocessableEntity));
         }
 
         private async Task<string> GetPublicKey()
@@ -381,7 +385,8 @@ namespace Template.Shared.Services
 
             throw error.Code switch
             {
-                HttpStatusCode.BadRequest => new GuidException(error.Message),
+                HttpStatusCode.BadRequest => new BadHttpRequestException(error.Message),
+                HttpStatusCode.UnprocessableEntity => new GuidException(error.Message),
                 HttpStatusCode.NotImplemented => new NotImplementedException(error.Message),
                 HttpStatusCode.Ambiguous => new DuplicateException(error.Message),
                 HttpStatusCode.NotFound => new NotFoundException(error.Message),
@@ -392,5 +397,6 @@ namespace Template.Shared.Services
         }
 
     #endregion
+
     }
 }

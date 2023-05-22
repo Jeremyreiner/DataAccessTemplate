@@ -1,6 +1,4 @@
 ﻿using System.Net;
-using Publify.Shared.Exceptions;
-using Template.Shared.Exceptions;
 
 namespace Template.Shared.Results
 {
@@ -11,21 +9,21 @@ namespace Template.Shared.Results
         private string GetQuote() => "\n" + _Chicken[_Random.Next(_Chicken.Count)] + ".\n";
 
         public string Message;
+
         public HttpStatusCode Code { get; set; }
 
         public static readonly Error None = new();
 
-        public Error() => (Message, Code) = (GetQuote(), HttpStatusCode.OK);
+        public Error() => 
+            (Message, Code) = (GetQuote(), HttpStatusCode.OK);
+
+        public Error(HttpStatusCode code) 
+            : this() => Code = code;
 
         public Error(string message)
         {
             Message = message;
             Code = HttpStatusCode.OK;
-        }
-
-        public Error(HttpStatusCode code) : this()
-        {
-            Code = code;
         }
 
         private readonly List<string> _Chicken = new()

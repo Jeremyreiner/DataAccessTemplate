@@ -15,11 +15,11 @@ namespace Template.Shared.Results
             Error = error;
         }
 
-        protected internal Result(T value, HttpStatusCode status, Error error)
+        protected internal Result(T value)
         {
             Value = value;
-            Status = status;
-            Error = error;
+            Status = HttpStatusCode.OK;
+            Error = Error.None;
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace Template.Shared.Results
         /// </summary>
         /// <param name="value">T value</param>
         /// <returns>Result of type T</returns>
-        public static Result<T> Success(T value) => new(value, HttpStatusCode.OK, Error.None);
+        public static Result<T> Success(T value) => new(value);
         
         /// <summary>
         /// Result.Deleted occurs currently upon the deletion of an entity,
