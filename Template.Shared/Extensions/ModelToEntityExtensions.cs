@@ -9,7 +9,7 @@ public static class ModelToEntityExtensions
     public static UserEntity ToEntity(this UserModel model) =>
         new()
         {
-            PublicId = Guid.Parse(model.Id),
+            PublicId = ValidateGuid(model.Id),
             FirstName = model.FirstName,
             LastName = model.LastName,
             Bio = model.Bio,
@@ -21,8 +21,18 @@ public static class ModelToEntityExtensions
     public static PostEntity ToEntity(this PostModel model) =>
         new()
         {
-            PublicId = Guid.Parse(model.PublicId),
+            PublicId = ValidateGuid(model.PublicId),
+            UserPublicId = ValidateGuid(model.UserPublicId),
             Description = model.Description,
             CreatedOnDt = model.CreatedOnDt,
         };
+
+    private static Guid ValidateGuid(string key)
+    {
+        var valid = Guid.TryParse(key, out var guid);
+
+        return valid 
+            ? guid
+            : Guid.Empty;
+    }
 }

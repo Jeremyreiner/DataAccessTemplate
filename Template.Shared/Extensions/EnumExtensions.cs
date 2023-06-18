@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
-using Publify.Shared.Enums;
+using Template.Shared.Enums;
 
-namespace Publify.Shared.Extensions
+namespace Template.Shared.Extensions
 {
     public static class EnumExtensions
     {
@@ -28,7 +28,7 @@ namespace Publify.Shared.Extensions
         }
 
         private static readonly Dictionary<string, Subjects> SubjectsMap =
-            Subjects.GetValues(typeof(Subjects))
+            Enum.GetValues(typeof(Subjects))
                 .Cast<Subjects>()
                 .ToDictionary(e => e.GetDescription(), e => e);
     }

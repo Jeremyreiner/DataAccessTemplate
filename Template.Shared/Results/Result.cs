@@ -38,7 +38,7 @@ namespace Template.Shared.Results
         /// This method requires of type HttpsStatusCode.
         /// </summary>
         /// <returns>Result of type HttpsStatusCode</returns>
-        public static Result<HttpStatusCode> Deleted() => new(Error.None);
+        public static Result<HttpStatusCode> Deleted() => new(Error.Deleted);
 
         /// <summary>
         /// Result.Failure, catches Error of type T, and initializes a failed Result of that error type.

@@ -3,7 +3,7 @@ using System.Net;
 using Template.Shared.Entities;
 using Template.Shared.Results;
 
-namespace Template.Shared.Interfaces.Repositories
+namespace Template.Shared.Interfaces.IRepositories
 {
     public interface IUserRepository
     {
@@ -13,9 +13,9 @@ namespace Template.Shared.Interfaces.Repositories
 
         Task<Result<HttpStatusCode>> DeleteAsync(UserEntity user);
 
-        Task<Result<UserEntity>> GetByAsync(string publicKey, Expression<Func<UserEntity, bool>> predicate);
+        Task<Result<UserEntity>> GetByAsync(Expression<Func<UserEntity, bool>> predicate);
 
-        Task<Result<UserEntity>> GetWithAsync(string publicKey, Expression<Func<UserEntity, bool>> predicate);
+        Task<Result<UserEntity>> GetWithAsync(Expression<Func<UserEntity, bool>> predicate);
 
         Task<Result<List<UserEntity>>> GetListByAsync();
 

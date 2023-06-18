@@ -1,7 +1,10 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Template.Shared.Entities;
+using Template.Shared.Enums;
 using Template.Shared.Extensions;
 using Template.Shared.Interfaces;
+using Template.Shared.Interfaces.IServices;
 using Template.Shared.Models;
 
 namespace Template.Controllers
@@ -13,32 +16,47 @@ namespace Template.Controllers
         {
             _DalService = dalService;
         }
-        [HttpPost("Create")]
-        public async Task<PostModel> PostAsync()
-        {
-            var result = await _DalService.CreatePostAsync();
 
-            return result.Value.ToModel();
+        [HttpPost("Create")]
+        public async Task<Guid> PostAsync()
+        {
+            var user = await _DalService.GetRandomUserAsync();
+
+            PostModel post = new()
+            {
+                PublicId = Guid.NewGuid().ToString(),
+                UserPublicId = user.PublicId.ToString(),
+                Description = Faker.Lorem.Sentence(),
+                CreatedOnDt = DateTime.Now,
+                Likes = 0
+            };
+            var result = await _DalService.CreatorManagerAsync(ClassType.Post, post);
+
+            return result;
         }
 
         [HttpGet]
         public async Task<PostModel> GetByAsync()
         {
-            var result = await _DalService.GetPostByAsync();
+            var post = await _DalService.GetRandomPostAsync();
+
+            var result = await _DalService.GetPostByAsync(post.PublicId.ToString());
 
             _DalService.CheckForThrow(result.Error);
 
             return result.Value.ToModel();
         }
 
-        [HttpGet("Followers")]
+        [HttpGet("LikedList")]
         public async Task<List<UserModel>> GetFollowers()
         {
-            var result = await _DalService.GetPostWithAsync();
+            var post = await _DalService.GetRandomPostAsync();
+
+            var result = await _DalService.GetPostWithAsync(post.PublicId.ToString());
 
             _DalService.CheckForThrow(result.Error);
 
-            return result.Value.Follows.ToModelList();
+            return result.Value.Likes.ToModelList();
         }
 
         [HttpGet("All")]
@@ -50,17 +68,25 @@ namespace Template.Controllers
         }
 
         [HttpPut]
-        public async Task<PostModel> UpdatePostAsync()
+        public async Task<Guid> UpdatePostAsync()
         {
-            var response = await _DalService.UpdatePostAsync();
+            var post = await _DalService.GetRandomPostAsync();
 
-            return response.Value.ToModel();
+            var description = Faker.Company.CatchPhrase();
+
+            var response = await _DalService.UpdateManagerAsync(ClassType.Post, post.PublicId.ToString(), description);
+
+            return response;
         }
 
-        [HttpPut("SubscribeTo")]
-        public async Task<PostModel> Subscribe()
+        [HttpPut("Like")]
+        public async Task<PostModel> Like()
         {
-            var response = await _DalService.FollowPostAsync();
+            var user = await _DalService.GetRandomUserAsync();
+
+            var post = await _DalService.GetRandomPostAsync();
+
+            var response = await _DalService.LikePostAsync(user.PublicId.ToString(), post.PublicId.ToString());
 
             return response.Value.ToModel();
         }
@@ -69,9 +95,11 @@ namespace Template.Controllers
         [HttpDelete("Delete")]
         public async Task<HttpStatusCode> DeletePostAsync()
         {
-            var code = await _DalService.DeletePostAsync();
+            var post = await _DalService.GetRandomPostAsync();
 
-            return code.Status;
+            var code = await _DalService.DeleteManagerAsync(ClassType.Post, post.PublicId.ToString());
+
+            return code;
         }
     }
 }

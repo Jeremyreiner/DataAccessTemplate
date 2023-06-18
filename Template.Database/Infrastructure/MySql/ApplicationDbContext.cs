@@ -31,11 +31,11 @@ namespace Template.Database.Infrastructure.MySql
                 .UsingEntity(j => j.ToTable("UserFollows"));
 
             modelBuilder.Entity<PostEntity>()
-                .HasMany(p => p.Follows)
+                .HasMany(p => p.Likes)
                 .WithMany(u => u.Posts)
                 .UsingEntity(j => j.ToTable("UserPosts"));
 
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < 10; i++)
             {
                 var user = new UserEntity
                 {

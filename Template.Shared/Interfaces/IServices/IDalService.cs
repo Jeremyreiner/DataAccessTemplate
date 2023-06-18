@@ -1,9 +1,10 @@
 ﻿using System.Net;
 using Template.Shared.Entities;
+using Template.Shared.Enums;
 using Template.Shared.Models;
 using Template.Shared.Results;
 
-namespace Template.Shared.Interfaces
+namespace Template.Shared.Interfaces.IServices
 {
     /// <summary>
     /// This is a template application interface. All values must be updated for proper use cases
@@ -15,48 +16,35 @@ namespace Template.Shared.Interfaces
         #region Create
 
         /// <summary>
-        /// Generates a new user object using faker data
+        /// Creator manager for entities
         /// </summary>
-        /// <returns>Result of type User</returns>
-        Task<Result<UserEntity>> CreateAsync();
-
-        /// <summary>
-        /// Generates a new post object using faker data
-        /// </summary>
+        /// <param name="type">Enum type for entities</param>
+        /// <param name="model">Entity property revealed to frontend</param>
         /// <returns></returns>
-        Task<Result<PostEntity>> CreatePostAsync();
+        Task<Guid> CreatorManagerAsync(ClassType type, object model);
 
         #endregion
 
         #region Update
 
         /// <summary>
-        /// Updates new user data using Faker randomly for selected user
+        /// Update manager for entities
         /// </summary>
-        /// <returns>Result of type User</returns>
-        Task<Result<UserEntity>> UpdateAsync();
-
-        /// <summary>
-        /// Updates post data using Faker for random user
-        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="publicKey"></param>
+        /// <param name="toUpdate"></param>
         /// <returns></returns>
-        Task<Result<PostEntity>> UpdatePostAsync();
+        Task<Guid> UpdateManagerAsync(ClassType type, string publicKey, object toUpdate);
 
         #endregion
 
         #region Delete
 
         /// <summary>
-        /// Deletes entity from DB
+        /// Delete manager for entities
         /// </summary>
         /// <returns>HttpStatusResponse</returns>
-        Task<Result<HttpStatusCode>> DeleteAsync();
-
-        /// <summary>
-        /// Deletes entity from DB
-        /// </summary>
-        /// <returns></returns>
-        Task<Result<HttpStatusCode>> DeletePostAsync();
+        Task<HttpStatusCode> DeleteManagerAsync(ClassType type, string publicKey);
 
         #endregion
 
@@ -66,25 +54,25 @@ namespace Template.Shared.Interfaces
         /// Gets user randomly from DB.
         /// </summary>
         /// <returns>Result of type User</returns>
-        Task<Result<UserEntity>> GetByAsync();
+        Task<Result<UserEntity>> GetUserByAsync(string publicKey);
 
         /// <summary>
         /// Gets a user from DB, including Many To Many Relationships
         /// </summary>
         /// <returns>Result of type User</returns>
-        Task<Result<UserEntity>> GetWithAsync();
+        Task<Result<UserEntity>> GetUserWithAsync(string publicKey);
 
         /// <summary>
         /// Gets post randomly from DB
         /// </summary>
         /// <returns></returns>
-        Task<Result<PostEntity>> GetPostByAsync();
+        Task<Result<PostEntity>> GetPostByAsync(string publicKey);
 
         /// <summary>
         /// Gets post with follows randomly from DB
         /// </summary>
         /// <returns></returns>
-        Task<Result<PostEntity>> GetPostWithAsync();
+        Task<Result<PostEntity>> GetPostWithAsync(string publicKey);
 
         #endregion
 
@@ -110,13 +98,13 @@ namespace Template.Shared.Interfaces
         /// Either a entity will subscribe to or unsubscribe from a randomly selected user entity.
         /// </summary>
         /// <returns>Result of type User</returns>
-        Task<Result<UserEntity>> SubscribeToAsync();
+        Task<Result<UserEntity>> SubscribeToAsync(string masterPublicKey, string slavePublicKey);
 
         /// <summary>
         /// Randomly selects post and user. If the post has the user, the user is unfollowed, otherwise, followed
         /// </summary>
         /// <returns></returns>
-        Task<Result<PostEntity>> FollowPostAsync();
+        Task<Result<PostEntity>> LikePostAsync(string userPublicKey, string postPublicKey);
 
         #endregion
 
@@ -142,11 +130,14 @@ namespace Template.Shared.Interfaces
         Task<Result<UserEntity>> ChangePassword(ChangePasswordModel model);
 
         #endregion
+        #region
 
-        #region Error Check
+        Task<UserEntity> GetRandomUserAsync();
+
+        Task<PostEntity> GetRandomPostAsync();
 
         void CheckForThrow(Error error);
-
+        
         #endregion
     }
 }

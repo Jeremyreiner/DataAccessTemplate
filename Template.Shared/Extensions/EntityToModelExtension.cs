@@ -24,9 +24,10 @@ public static class EntityToModelExtension
         new()
         {
             PublicId = entity.PublicId.ToString(),
+            UserPublicId = entity.PublicId.ToString(),
             Description = entity.Description,
             CreatedOnDt = entity.CreatedOnDt,
-            Follows = entity.Follows.Count,
+            Likes = entity.Likes.Count,
         };
 
     public static List<PostModel> ToModelList(this IEnumerable<PostEntity> list) =>

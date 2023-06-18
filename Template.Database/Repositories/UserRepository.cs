@@ -6,7 +6,7 @@ using Template.Shared.Results;
 using Template.Database.Infrastructure.MySql;
 using Template.Shared.Entities;
 using Template.Shared.Extensions;
-using Template.Shared.Interfaces.Repositories;
+using Template.Shared.Interfaces.IRepositories;
 
 namespace Template.Database.Repositories
 {
@@ -23,43 +23,49 @@ namespace Template.Database.Repositories
         {
             await _DbContext.Users.AddAsync(user);
 
-            await _DbContext.SaveChangesAsync();
+            var count = await _DbContext.SaveChangesAsync();
 
-            return Result<UserEntity>.Success(user);
+            return count == 0
+                ? Result<UserEntity>.Failed(new Error(HttpStatusCode.BadRequest))
+                : Result<UserEntity>.Success(user);
         }
 
         public async Task<Result<UserEntity>> UpdateAsync(UserEntity user)
         {
             _DbContext.Users.Update(user);
 
-            await _DbContext.SaveChangesAsync();
+            var count = await _DbContext.SaveChangesAsync();
 
-            return Result<UserEntity>.Success(user);
+            return count == 0
+                ? Result<UserEntity>.Failed(new Error(HttpStatusCode.BadRequest))
+                : Result<UserEntity>.Success(user);
         }
 
         public async Task<Result<HttpStatusCode>> DeleteAsync(UserEntity user)
         {
             _DbContext.Users.Remove(user);
 
-            await _DbContext.SaveChangesAsync();
+            var count = await _DbContext.SaveChangesAsync();
 
-            return Result<HttpStatusCode>.Deleted();
+            return count == 0 
+                ? Result<HttpStatusCode>.Failed(new Error(HttpStatusCode.BadRequest))
+                : Result<HttpStatusCode>.Deleted();
         }
 
-        public async Task<Result<UserEntity>> GetByAsync(string publicKey, Expression<Func<UserEntity, bool>> predicate)
+        public async Task<Result<UserEntity>> GetByAsync(Expression<Func<UserEntity, bool>> predicate)
         {
             var user = await _DbContext
                 .Users
                 .FirstOrDefaultAsync(predicate);
 
-            return user is not null 
-                ? Result<UserEntity>.Success(user) 
+            return user is not null
+                ? Result<UserEntity>.Success(user)
                 : Result<UserEntity>
                     .Failed(new Error(HttpStatusCode.NotFound));
         }
 
 
-        public async Task<Result<UserEntity>> GetWithAsync(string publicKey, Expression<Func<UserEntity, bool>> predicate)
+        public async Task<Result<UserEntity>> GetWithAsync(Expression<Func<UserEntity, bool>> predicate)
         {
             var user = await _DbContext
                 .Users
@@ -77,6 +83,7 @@ namespace Template.Database.Repositories
         {
             var users = await _DbContext.Users
                 .Include(user => user.Followers)
+                .AsSplitQuery()
                 .Include(user => user.Following)
                 .ToListAsync();
 
@@ -90,12 +97,8 @@ namespace Template.Database.Repositories
             var users = await _DbContext.Users.ToListAsync();
 
             return users.Any()
-                ? Result<List<UserEntity>>.Success(users) 
+                ? Result<List<UserEntity>>.Success(users)
                 : Result<List<UserEntity>>.Failed(new Error(HttpStatusCode.NotFound));
         }
-
-
-        //public async Task<TeacherEntity?> GetByIncludedAsync<TEntity>(Expression<Func<TeacherEntity, bool>> predicate, Expression<Func<TeacherEntity, TEntity>> selector) where TEntity : class? =>
-        //    await _DbContext.Users.Include(selector).FirstOrDefaultAsync(predicate);
     }
 }

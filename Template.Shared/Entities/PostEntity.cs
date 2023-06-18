@@ -9,7 +9,7 @@ public class PostEntity
 {
     public PostEntity()
     {
-        Follows = new HashSet<UserEntity>();
+        Likes = new HashSet<UserEntity>();
     }
 
     [Key]
@@ -17,7 +17,7 @@ public class PostEntity
 
     public Guid PublicId { get; set; }
 
-    public Guid UserEntityId { get; set; }
+    public Guid UserPublicId { get; set; }
 
     public string Description { get; set; } = string.Empty;
 
@@ -25,5 +25,5 @@ public class PostEntity
 
     public DateTime LastUpdateOnDt { get; set; } = DateTime.Now;
 
-    public ICollection<UserEntity> Follows { get; set; }
+    public ICollection<UserEntity> Likes { get; set; }
 }

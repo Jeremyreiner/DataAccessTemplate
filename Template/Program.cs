@@ -6,7 +6,8 @@ using Template.Shared.Services;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Template.Database.Infrastructure.MySql;
 using Template.Database.Repositories;
-using Template.Shared.Interfaces.Repositories;
+using Template.Shared.Interfaces.IRepositories;
+using Template.Shared.Interfaces.IServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,8 +28,8 @@ builder.Services.AddSingleton<MainService>();
 
 //Data Access Services
 builder.Services.AddScoped<IDalService, DalService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddTransient<IPostRepository, PostRepository>();
 
 //Swagger Auth
 builder.Services.AddSwaggerGen();

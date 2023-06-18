@@ -19,6 +19,4 @@ public class UserModel
     public DateTime CreatedOnDt { get; set; } = DateTime.Now;
 
     public DateTime LastUpdateOnDt { get; set; } = DateTime.Now;
-
-    public string FullName => $"{FirstName} {LastName}";
 }

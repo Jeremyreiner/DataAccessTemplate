@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Template.Database.Infrastructure.MySql;
 using Template.Shared.Entities;
 using Template.Shared.Extensions;
-using Template.Shared.Interfaces.Repositories;
+using Template.Shared.Interfaces.IRepositories;
 using Template.Shared.Records;
 using Template.Shared.Results;
 
@@ -23,27 +23,33 @@ namespace Template.Database.Repositories
         {
             await _DbContext.Posts.AddAsync(post);
 
-            await _DbContext.SaveChangesAsync();
+            var count = await _DbContext.SaveChangesAsync();
 
-            return Result<PostEntity>.Success(post);
+            return count == 0
+                ? Result<PostEntity>.Failed(new Error(HttpStatusCode.NotFound)) 
+                : Result<PostEntity>.Success(post);
         }
 
         public async Task<Result<PostEntity>> UpdateAsync(PostEntity post)
         {
             _DbContext.Posts.Update(post);
 
-            await _DbContext.SaveChangesAsync();
+            var count = await _DbContext.SaveChangesAsync();
 
-            return Result<PostEntity>.Success(post);
+            return count == 0
+                ? Result<PostEntity>.Failed(new Error(HttpStatusCode.NotFound))
+                : Result<PostEntity>.Success(post);
         }
 
         public async Task<Result<HttpStatusCode>> DeleteAsync(PostEntity post)
         {
             _DbContext.Posts.Remove(post);
 
-            await _DbContext.SaveChangesAsync();
+            var count = await _DbContext.SaveChangesAsync();
 
-            return Result<HttpStatusCode>.Deleted();
+            return count == 0 
+                ? Result<HttpStatusCode>.Deleted()
+                : Result<HttpStatusCode>.Failed(new Error(HttpStatusCode.NotModified));
         }
 
         public async Task<Result<PostEntity>> GetByAsync(string publicKey, Expression<Func<PostEntity, bool>> predicate)
@@ -62,7 +68,7 @@ namespace Template.Database.Repositories
         {
             var post = await _DbContext
                 .Posts
-                .Include(post => post.Follows)
+                .Include(post => post.Likes)
                 .FirstOrDefaultAsync(predicate);
 
             return post is not null
@@ -74,7 +80,7 @@ namespace Template.Database.Repositories
         public async Task<Result<List<PostEntity>>> GetListWithAsync()
         {
             var posts = await _DbContext.Posts
-                .Include(post => post.Follows)
+                .Include(post => post.Likes)
                 .ToListAsync();
 
             return posts.Any()

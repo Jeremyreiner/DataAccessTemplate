@@ -3,7 +3,7 @@ using System.Net;
 using Template.Shared.Entities;
 using Template.Shared.Results;
 
-namespace Template.Shared.Interfaces.Repositories
+namespace Template.Shared.Interfaces.IRepositories
 {
     public interface IPostRepository
     {
