@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Net;
+﻿using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Publify.Shared.Exceptions;
@@ -8,7 +7,6 @@ using Template.Shared.Entities;
 using Template.Shared.Enums;
 using Template.Shared.Exceptions;
 using Template.Shared.Extensions;
-using Template.Shared.Interfaces;
 using Template.Shared.Interfaces.IRepositories;
 using Template.Shared.Interfaces.IServices;
 using Template.Shared.Models;
@@ -20,18 +18,18 @@ namespace Template.Shared.Services
     {
         readonly IUserRepository _UserRepository;
 
-        private readonly IPostRepository _PostRespository;
+        private readonly IPostRepository _postRepository;
 
         readonly ILogger<DalService> _Logger;
 
         public DalService(
             IUserRepository userRepository,
             ILogger<DalService> logger,
-            IPostRepository postRespository)
+            IPostRepository postRepository)
         {
             _UserRepository = userRepository;
             _Logger = logger;
-            _PostRespository = postRespository;
+            _postRepository = postRepository;
         }
 
         #region CREATE ENTITY
@@ -47,47 +45,33 @@ namespace Template.Shared.Services
 
                     var user = await CreateUserAsync(userModel);
 
-                    if (user.IsSuccess)
-                        id = user.Value.PublicId;
-                    break;
+                    return user.IsSuccess 
+                        ? user.Value.PublicId 
+                        : id;
                 case ClassType.Post:
                     var postModel = (PostModel)model;
 
                     var post = await CreatePostAsync(postModel);
 
-                    if (post.IsSuccess)
-                        id = post.Value.PublicId;
-                    break;
+                    return post.IsSuccess 
+                        ? post.Value.PublicId 
+                        : id;
                 default:
-                    CheckForThrow(new Error(HttpStatusCode.NotImplemented));
-                    break;
+                    return id;
             }
-
-            return id;
         }
 
         #endregion
 
         #region UPDATE ENTITY
 
-        public async Task<Guid> UpdateManagerAsync(ClassType type, string publicKey, object toUpdate)
-        {
-            var guid = Guid.Empty;
-
-            switch (type)
+        public async Task<Guid> UpdateManagerAsync(ClassType type, string publicKey, object toUpdate) =>
+            type switch
             {
-                case ClassType.User:
-                    guid = await UpdateUserAsync(publicKey, toUpdate);
-                    break;
-                case ClassType.Post:
-                    guid = await UpdatePostAsync(publicKey, toUpdate);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
-
-            return guid;
-        }
+                ClassType.User => await UpdateUserAsync(publicKey, toUpdate),
+                ClassType.Post => await UpdatePostAsync(publicKey, toUpdate),
+                _ => Guid.Empty
+            };
 
         #endregion
         #region DELETE ENTITY
@@ -104,12 +88,9 @@ namespace Template.Shared.Services
                     var post = await DeletePostAsync(publicKey);
 
                     return post.Status;
-                    break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                    return HttpStatusCode.PreconditionFailed;
             }
-
-            return HttpStatusCode.ExpectationFailed;
         }
 
         #endregion
@@ -140,7 +121,7 @@ namespace Template.Shared.Services
             var guid = ValidateGuid(publicKey);
 
             if (guid != Guid.Empty)
-                return await _PostRespository.GetByAsync(publicKey, u => u.PublicId == guid);
+                return await _postRepository.GetByAsync(publicKey, u => u.PublicId == guid);
 
             return Result<PostEntity>.Failed(new Error(HttpStatusCode.UnprocessableEntity));
         }
@@ -150,7 +131,7 @@ namespace Template.Shared.Services
             var guid = ValidateGuid(publicKey);
 
             if (guid != Guid.Empty)
-                return await _PostRespository.GetWithAsync(publicKey, u => u.PublicId == guid);
+                return await _postRepository.GetWithAsync(publicKey, u => u.PublicId == guid);
 
             return Result<PostEntity>.Failed(new Error(HttpStatusCode.UnprocessableEntity));
         }
@@ -169,7 +150,7 @@ namespace Template.Shared.Services
 
         public async Task<List<PostEntity>> GetAllPostsByAsync()
         {
-            var result = await _PostRespository.GetListWithAsync();
+            var result = await _postRepository.GetListWithAsync();
 
             CheckForThrow(result.Error);
 
@@ -227,7 +208,7 @@ namespace Template.Shared.Services
                 post.Likes.Add(user);
             }
 
-            return await _PostRespository.UpdateAsync(post);
+            return await _postRepository.UpdateAsync(post);
         }
 
         #endregion
@@ -267,6 +248,7 @@ namespace Template.Shared.Services
             }
 
             verified.Value.Password = model.NewPassword.Hash();
+
             verified.Value.LastUpdateOnDt = DateTime.Now;
 
             return await _UserRepository.UpdateAsync(verified.Value);
@@ -293,7 +275,7 @@ namespace Template.Shared.Services
         {
             var random = new Random();
 
-            var result = await _PostRespository.GetListByAsync();
+            var result = await _postRepository.GetListByAsync();
 
             if (!result.IsSuccess)
                 return new PostEntity();
@@ -305,6 +287,8 @@ namespace Template.Shared.Services
 
         public void CheckForThrow(Error error)
         {
+            _Logger.LogCritical(error.Code.ToString());
+
             if (error.Code != HttpStatusCode.OK)
                 throw error.Code switch
                 {
@@ -318,8 +302,6 @@ namespace Template.Shared.Services
                     HttpStatusCode.PreconditionFailed => new UnauthorizedException(error.Code.ToString()),
                     _ => new Exception()
                 };
-
-            _Logger.LogCritical(error.Code.ToString());
         }
 
         #endregion
@@ -365,7 +347,7 @@ namespace Template.Shared.Services
 
             entity.PrivateId = Guid.NewGuid();
 
-            var result = await _PostRespository.AddAsync(entity);
+            var result = await _postRepository.AddAsync(entity);
 
             CheckForThrow(result.Error);
 
@@ -403,7 +385,7 @@ namespace Template.Shared.Services
             post.Description = Faker.Lorem.Sentence();
             post.LastUpdateOnDt = DateTime.Now;
 
-            var request = await _PostRespository.UpdateAsync(post);
+            var request = await _postRepository.UpdateAsync(post);
 
             return request.IsSuccess
                 ? post.PublicId
@@ -419,7 +401,7 @@ namespace Template.Shared.Services
                 return await _UserRepository.DeleteAsync(result.Value);
             }
 
-            _Logger.LogTrace(result.Error.Code.ToString());
+            _Logger.LogInformation(result.Error.Code.ToString());
 
             return Result<HttpStatusCode>.Deleted();
         }
@@ -430,10 +412,10 @@ namespace Template.Shared.Services
 
             if (result.IsSuccess)
             {
-                return await _PostRespository.DeleteAsync(result.Value);
+                return await _postRepository.DeleteAsync(result.Value);
             }
 
-            _Logger.LogTrace(result.Error.Code.ToString());
+            _Logger.LogInformation(result.Error.Code.ToString());
 
             return Result<HttpStatusCode>.Deleted();
         }
