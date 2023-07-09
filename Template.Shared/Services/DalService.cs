@@ -1,16 +1,11 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Publify.Shared.Exceptions;
+﻿using Microsoft.Extensions.Logging;
 using Publify.Shared.Services;
 using Template.Shared.Entities;
 using Template.Shared.Enums;
-using Template.Shared.Exceptions;
 using Template.Shared.Extensions;
 using Template.Shared.Interfaces.IRepositories;
 using Template.Shared.Interfaces.IServices;
 using Template.Shared.Models;
-using Template.Shared.Results;
 
 namespace Template.Shared.Services
 {
@@ -36,8 +31,6 @@ namespace Template.Shared.Services
 
         public async Task<Guid> CreatorManagerAsync(ClassType type, object model)
         {
-            var id = Guid.Empty;
-
             switch (type)
             {
                 case ClassType.User:
@@ -45,19 +38,15 @@ namespace Template.Shared.Services
 
                     var user = await CreateUserAsync(userModel);
 
-                    return user.IsSuccess 
-                        ? user.Value.PublicId 
-                        : id;
+                    return user.PublicId;
+
                 case ClassType.Post:
                     var postModel = (PostModel)model;
 
                     var post = await CreatePostAsync(postModel);
-
-                    return post.IsSuccess 
-                        ? post.Value.PublicId 
-                        : id;
+                    return post.PublicId;
                 default:
-                    return id;
+                    return Guid.Empty;
             }
         }
 
@@ -76,182 +65,148 @@ namespace Template.Shared.Services
         #endregion
         #region DELETE ENTITY
 
-        public async Task<HttpStatusCode> DeleteManagerAsync(ClassType type, string publicKey)
+        public async Task<bool> DeleteManagerAsync(ClassType type, string publicKey)
         {
             switch (type)
             {
                 case ClassType.User:
-                    var user = await DeleteUserAsync(publicKey);
+                    return await DeleteUserAsync(publicKey);
 
-                    return user.Status;
                 case ClassType.Post:
-                    var post = await DeletePostAsync(publicKey);
+                    return await DeletePostAsync(publicKey);
 
-                    return post.Status;
                 default:
-                    return HttpStatusCode.PreconditionFailed;
+                    return false;
             }
         }
 
         #endregion
         #region GetBy
 
-        public async Task<Result<UserEntity>> GetUserByAsync(string publicKey)
+        public async Task<UserEntity?> GetUserByAsync(string publicKey)
         {
             var guid = ValidateGuid(publicKey);
 
             if (guid != Guid.Empty)
                 return await _UserRepository.GetByAsync(u => u.PublicId == guid);
-
-            return Result<UserEntity>.Failed(new Error(HttpStatusCode.UnprocessableEntity));
+            return null;
         }
 
-        public async Task<Result<UserEntity>> GetUserWithAsync(string publicKey)
+        public async Task<UserEntity?> GetUserWithAsync(string publicKey)
         {
             var guid = ValidateGuid(publicKey);
 
             if (guid != Guid.Empty)
                 return await _UserRepository.GetWithAsync(u => u.PublicId == guid);
-
-            return Result<UserEntity>.Failed(new Error(HttpStatusCode.UnprocessableEntity));
+            return null;
         }
 
-        public async Task<Result<PostEntity>> GetPostByAsync(string publicKey)
+        public async Task<PostEntity?> GetPostByAsync(string publicKey)
         {
             var guid = ValidateGuid(publicKey);
 
             if (guid != Guid.Empty)
                 return await _postRepository.GetByAsync(publicKey, u => u.PublicId == guid);
-
-            return Result<PostEntity>.Failed(new Error(HttpStatusCode.UnprocessableEntity));
+            return null;
         }
 
-        public async Task<Result<PostEntity>> GetPostWithAsync(string publicKey)
+        public async Task<PostEntity?> GetPostWithAsync(string publicKey)
         {
             var guid = ValidateGuid(publicKey);
 
             if (guid != Guid.Empty)
                 return await _postRepository.GetWithAsync(publicKey, u => u.PublicId == guid);
-
-            return Result<PostEntity>.Failed(new Error(HttpStatusCode.UnprocessableEntity));
+            return null;
         }
 
         #endregion
         #region GetAllBy
 
-        public async Task<List<UserEntity>> GetAllByAsync()
-        {
-            var result = await _UserRepository.GetListWithAsync();
+        public async Task<List<UserEntity>?> GetAllByAsync() =>
+            await _UserRepository.GetListWithAsync();
 
-            CheckForThrow(result.Error);
-
-            return result.Value;
-        }
-
-        public async Task<List<PostEntity>> GetAllPostsByAsync()
-        {
-            var result = await _postRepository.GetListWithAsync();
-
-            CheckForThrow(result.Error);
-
-            return result.Value;
-        }
+        public async Task<List<PostEntity>?> GetAllPostsByAsync() =>
+            await _postRepository.GetListWithAsync();
 
 
         #endregion
         #region Subcription
 
-        public async Task<Result<UserEntity>> SubscribeToAsync(string masterPublicKey, string slavePublicKey)
+        public async Task<UserEntity?> SubscribeToAsync(string masterPublicKey, string slavePublicKey)
         {
-            var resultMaster = await GetUserByAsync(masterPublicKey);
+            var user1 = await GetUserByAsync(masterPublicKey);
 
-            var resultSlave = await GetUserByAsync(slavePublicKey);
+            var user2 = await GetUserByAsync(slavePublicKey);
 
-            var user1 = resultMaster.Value;
-
-            var user2 = resultSlave.Value;
+            if (user1 == null || user2 == null)
+                return null;
 
             if (user1.PrivateId == user2.PrivateId)
-            {
-                return Result<UserEntity>
-                    .Failed(new Error(HttpStatusCode.Ambiguous));
-            }
+                return user1;
 
             if (user1.Followers.Contains(user2))
-            {
                 user1.Followers.Remove(user2);
-            }
             else
-            {
                 user1.Followers.Add(user2);
-            }
 
-            return await _UserRepository.UpdateAsync(user1);
+            await _UserRepository.UpdateAsync(user1);
+
+            return user1;
         }
 
-        public async Task<Result<PostEntity>> LikePostAsync(string userPublicKey, string postPublicKey)
+        public async Task<PostEntity?> LikePostAsync(string userPublicKey, string postPublicKey)
         {
-            var resultUser = await GetUserByAsync(userPublicKey);
+            var user = await GetUserByAsync(userPublicKey);
 
-            var resultPost = await GetPostWithAsync(postPublicKey);
+            var post = await GetPostWithAsync(postPublicKey);
 
-            var user = resultUser.Value;
-
-            var post = resultPost.Value;
+            if (user == null || post == null)
+                return null;
 
             if (post.Likes.Contains(user))
-            {
                 post.Likes.Remove(user);
-            }
             else
-            {
                 post.Likes.Add(user);
-            }
 
-            return await _postRepository.UpdateAsync(post);
+            await _postRepository.UpdateAsync(post);
+
+            return post;
         }
 
         #endregion
         #region AUTHENTICATION
 
-        public async Task<Result<UserEntity>> Login(string email, string password)
+        public async Task<UserEntity?> Login(string email, string password)
         {
             var result = await _UserRepository.GetByAsync(u => u.Email == email);
 
-            if (!result.IsSuccess)
-            {
-                return Result<UserEntity>
-                    .Failed(result.Error);
-            }
+            if (result == null)
+                return null;
 
-            var verified = password.VerifyHash(result.Value.Password);
+            var verified = password.VerifyHash(result.Password);
 
             return verified
                 ? result
-                : Result<UserEntity>
-                    .Failed(new Error(HttpStatusCode.Unauthorized));
+                : null;
         }
 
-        public async Task<Result<UserEntity>> ChangePassword(ChangePasswordModel model)
+        public async Task<bool> ChangePassword(ChangePasswordModel model)
         {
             if (model.ConfirmedPassword != model.NewPassword)
-            {
-                return Result<UserEntity>
-                    .Failed(new Error(HttpStatusCode.PreconditionFailed));
-            }
+                return false;
 
             var verified = await Login(model.Email, model.Password);
 
-            if (!verified.IsSuccess)
-            {
-                return verified;
-            }
+            if (verified == null)
+                return false;
 
-            verified.Value.Password = model.NewPassword.Hash();
+            verified.Password = model.NewPassword.Hash();
 
-            verified.Value.LastUpdateOnDt = DateTime.Now;
+            verified.LastUpdateOnDt = DateTime.Now;
 
-            return await _UserRepository.UpdateAsync(verified.Value);
+            await _UserRepository.UpdateAsync(verified);
+
+            return true;
         }
 
         #endregion
@@ -263,12 +218,9 @@ namespace Template.Shared.Services
 
             var result = await _UserRepository.GetListByAsync();
 
-            if (!result.IsSuccess)
-                return new UserEntity();
-
-            var users = result.Value;
-
-            return users[random.Next(0, users.Count)];
+            return result is null 
+                ? new UserEntity() 
+                : result[random.Next(0, result.Count)];
         }
 
         public async Task<PostEntity> GetRandomPostAsync()
@@ -277,37 +229,15 @@ namespace Template.Shared.Services
 
             var result = await _postRepository.GetListByAsync();
 
-            if (!result.IsSuccess)
-                return new PostEntity();
-
-            var posts = result.Value;
-
-            return posts[random.Next(0, posts.Count)];
-        }
-
-        public void CheckForThrow(Error error)
-        {
-            _Logger.LogCritical(error.Code.ToString());
-
-            if (error.Code != HttpStatusCode.OK)
-                throw error.Code switch
-                {
-                    HttpStatusCode.BadRequest => new BadHttpRequestException(error.Code.ToString()),
-                    HttpStatusCode.NotModified => new BadHttpRequestException(error.Code.ToString()),
-                    HttpStatusCode.UnprocessableEntity => new GuidException(error.Code.ToString()),
-                    HttpStatusCode.NotImplemented => new NotImplementedException(error.Code.ToString()),
-                    HttpStatusCode.Ambiguous => new DuplicateException(error.Code.ToString()),
-                    HttpStatusCode.NotFound => new NotFoundException(error.Code.ToString()),
-                    HttpStatusCode.Unauthorized => new UnauthorizedException(error.Code.ToString()),
-                    HttpStatusCode.PreconditionFailed => new UnauthorizedException(error.Code.ToString()),
-                    _ => new Exception()
-                };
+            return result is null 
+                ? new PostEntity() 
+                : result[random.Next(0, result.Count)];
         }
 
         #endregion
         #region Private Methods
 
-        private async Task<Result<UserEntity>> CreateUserAsync(UserModel model)
+        private async Task<UserEntity?> CreateUserAsync(UserModel model)
         {
             var entity = model.ToEntity();
 
@@ -316,21 +246,19 @@ namespace Template.Shared.Services
 
             var request = await _UserRepository.GetByAsync(u => u.PublicId == entity.PublicId);
 
-            if (request.Error.Code != HttpStatusCode.NotFound)
+            if (request !=  null)
             {
-                CheckForThrow(request.Error);
+                return null;
             }
 
             entity.PrivateId = Guid.NewGuid();
 
-            var result = await _UserRepository.AddAsync(entity);
+            await _UserRepository.AddAsync(entity);
 
-            CheckForThrow(result.Error);
-
-            return result;
+            return entity;
         }
 
-        private async Task<Result<PostEntity>> CreatePostAsync(PostModel model)
+        private async Task<PostEntity?> CreatePostAsync(PostModel model)
         {
             var entity = model.ToEntity();
 
@@ -341,83 +269,71 @@ namespace Template.Shared.Services
             {
                 var user = await GetUserByAsync(entity.UserPublicId.ToString());
 
-                if(!user.IsSuccess)
-                    CheckForThrow(new Error(HttpStatusCode.BadRequest));
+                if (user == null)
+                    return null;
             }
 
             entity.PrivateId = Guid.NewGuid();
 
-            var result = await _postRepository.AddAsync(entity);
+            await _postRepository.AddAsync(entity);
 
-            CheckForThrow(result.Error);
-
-            return result;
+            return entity;
         }
 
         private async Task<Guid> UpdateUserAsync(string publicKey, object toUpdate)
         {
-            var result = await GetUserByAsync(publicKey);
+            var user = await GetUserByAsync(publicKey);
 
-            CheckForThrow(result.Error);
-
-            var user = result.Value;
+            if(user == null)
+                return Guid.Empty;
 
             user.FirstName = Faker.Name.First();
             user.LastName = Faker.Name.Last();
             user.Bio = Faker.Lorem.Paragraph();
             user.LastUpdateOnDt = DateTime.Now;
 
-            var request = await _UserRepository.UpdateAsync(user);
+            await _UserRepository.UpdateAsync(user);
 
-            return request.IsSuccess
-                ? user.PublicId
-                : Guid.Empty;
+            return user.PublicId;
         }
 
         private async Task<Guid> UpdatePostAsync(string publicKey, object toUpdate)
         {
-            var result = await GetPostByAsync(publicKey);
+            var post = await GetPostByAsync(publicKey);
 
-            CheckForThrow(result.Error);
-
-            var post = result.Value;
+            if (post == null)
+                return Guid.Empty;
 
             post.Description = Faker.Lorem.Sentence();
             post.LastUpdateOnDt = DateTime.Now;
 
-            var request = await _postRepository.UpdateAsync(post);
+            await _postRepository.UpdateAsync(post);
 
-            return request.IsSuccess
-                ? post.PublicId
-                : Guid.Empty;
+            return post.PublicId;
         }
 
-        private async Task<Result<HttpStatusCode>> DeleteUserAsync(string publicKey)
+        private async Task<bool> DeleteUserAsync(string publicKey)
         {
             var result = await GetUserByAsync(publicKey);
 
-            if (result.IsSuccess)
-            {
-                return await _UserRepository.DeleteAsync(result.Value);
-            }
+            if (result == null) 
+                return false;
+            
+            await _UserRepository.DeleteAsync(result);
 
-            _Logger.LogInformation(result.Error.Code.ToString());
-
-            return Result<HttpStatusCode>.Deleted();
+            return true;
         }
 
-        private async Task<Result<HttpStatusCode>> DeletePostAsync(string publicKey)
+        private async Task<bool> DeletePostAsync(string publicKey)
         {
             var result = await GetPostByAsync(publicKey);
 
-            if (result.IsSuccess)
-            {
-                return await _postRepository.DeleteAsync(result.Value);
-            }
+            if (result == null)
+                return false;
 
-            _Logger.LogInformation(result.Error.Code.ToString());
+            await _postRepository.DeleteAsync(result);
 
-            return Result<HttpStatusCode>.Deleted();
+            return true;
         }
 
         private static Guid ValidateGuid(string key)

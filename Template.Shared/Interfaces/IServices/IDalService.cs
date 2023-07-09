@@ -2,7 +2,6 @@
 using Template.Shared.Entities;
 using Template.Shared.Enums;
 using Template.Shared.Models;
-using Template.Shared.Results;
 
 namespace Template.Shared.Interfaces.IServices
 {
@@ -44,7 +43,7 @@ namespace Template.Shared.Interfaces.IServices
         /// Delete manager for entities
         /// </summary>
         /// <returns>HttpStatusResponse</returns>
-        Task<HttpStatusCode> DeleteManagerAsync(ClassType type, string publicKey);
+        Task<bool> DeleteManagerAsync(ClassType type, string publicKey);
 
         #endregion
 
@@ -54,25 +53,25 @@ namespace Template.Shared.Interfaces.IServices
         /// Gets user randomly from DB.
         /// </summary>
         /// <returns>Result of type User</returns>
-        Task<Result<UserEntity>> GetUserByAsync(string publicKey);
+        Task<UserEntity?> GetUserByAsync(string publicKey);
 
         /// <summary>
         /// Gets a user from DB, including Many To Many Relationships
         /// </summary>
         /// <returns>Result of type User</returns>
-        Task<Result<UserEntity>> GetUserWithAsync(string publicKey);
+        Task<UserEntity?> GetUserWithAsync(string publicKey);
 
         /// <summary>
         /// Gets post randomly from DB
         /// </summary>
         /// <returns></returns>
-        Task<Result<PostEntity>> GetPostByAsync(string publicKey);
+        Task<PostEntity?> GetPostByAsync(string publicKey);
 
         /// <summary>
         /// Gets post with follows randomly from DB
         /// </summary>
         /// <returns></returns>
-        Task<Result<PostEntity>> GetPostWithAsync(string publicKey);
+        Task<PostEntity?> GetPostWithAsync(string publicKey);
 
         #endregion
 
@@ -82,13 +81,13 @@ namespace Template.Shared.Interfaces.IServices
         /// Gets all User entities from DB.
         /// </summary>
         /// <returns>List of Users</returns>
-        Task<List<UserEntity>> GetAllByAsync();
+        Task<List<UserEntity>?> GetAllByAsync();
 
         /// <summary>
         /// Gets all posts from Db
         /// </summary>
         /// <returns></returns>
-        Task<List<PostEntity>> GetAllPostsByAsync();
+        Task<List<PostEntity>?> GetAllPostsByAsync();
 
         #endregion
 
@@ -98,13 +97,13 @@ namespace Template.Shared.Interfaces.IServices
         /// Either a entity will subscribe to or unsubscribe from a randomly selected user entity.
         /// </summary>
         /// <returns>Result of type User</returns>
-        Task<Result<UserEntity>> SubscribeToAsync(string masterPublicKey, string slavePublicKey);
+        Task<UserEntity?> SubscribeToAsync(string masterPublicKey, string slavePublicKey);
 
         /// <summary>
         /// Randomly selects post and user. If the post has the user, the user is unfollowed, otherwise, followed
         /// </summary>
         /// <returns></returns>
-        Task<Result<PostEntity>> LikePostAsync(string userPublicKey, string postPublicKey);
+        Task<PostEntity?> LikePostAsync(string userPublicKey, string postPublicKey);
 
         #endregion
 
@@ -117,27 +116,24 @@ namespace Template.Shared.Interfaces.IServices
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns>Result of type User</returns>
-        Task<Result<UserEntity>> Login(string email, string password);
+        Task<UserEntity?> Login(string email, string password);
 
         /// <summary>
         /// Verifies that the entered New password, and confirmed new password match,
         /// Verifies that the original password, is indeed the original password,
         /// if both these checks pass, then the new password is updated and the user is saved
         /// </summary>
-        /// <param name="email"></param>
         /// <param name="model"></param>
         /// <returns>Result of type User</returns>
-        Task<Result<UserEntity>> ChangePassword(ChangePasswordModel model);
+        Task<bool> ChangePassword(ChangePasswordModel model);
 
         #endregion
         #region
 
-        Task<UserEntity> GetRandomUserAsync();
+        Task<UserEntity?> GetRandomUserAsync();
 
-        Task<PostEntity> GetRandomPostAsync();
+        Task<PostEntity?> GetRandomPostAsync();
 
-        void CheckForThrow(Error error);
-        
         #endregion
     }
 }

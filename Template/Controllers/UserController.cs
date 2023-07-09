@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Template.Shared.Entities;
 using Template.Shared.Enums;
 using Template.Shared.Extensions;
-using Template.Shared.Interfaces;
 using Template.Shared.Interfaces.IServices;
 using Template.Shared.Models;
-using Template.Shared.Results;
 
 namespace Template.Controllers
 {
@@ -44,75 +42,63 @@ namespace Template.Controllers
         }
 
         [HttpPost("LogIn")]
-        public async Task<UserModel> Login(string email, string password)
+        public async Task<UserModel?> Login(string email, string password)
         {
             var result = await _DalService.Login(email, password);
 
-            _DalService.CheckForThrow(result.Error);
-
-            return result.Value.ToModel();
+            return result?.ToModel();
         }
 
         [HttpPost("ChangePassword")]
-        public async Task<HttpStatusCode> ChangePassword([FromBody] ChangePasswordModel model)
-        {
-            var result = await _DalService.ChangePassword(model);
-
-            _DalService.CheckForThrow(result.Error);
-
-            return result.Status;
-
-        } 
+        public async Task<bool> ChangePassword([FromBody] ChangePasswordModel model) =>
+            await _DalService.ChangePassword(model);
 
         [HttpGet]
-        public async Task<UserModel> GetByAsync()
+        public async Task<UserModel?> GetByAsync()
         {
             var user = await _DalService.GetRandomUserAsync();
 
             var result = await _DalService.GetUserByAsync(user.PublicId.ToString());
 
-            _DalService.CheckForThrow(result.Error);
-
-            return result.Value.ToModel();
+            return result?.ToModel();
         }
 
         [HttpGet("Followers")]
-        public async Task<List<UserModel>> GetFollowers()
+        public async Task<List<UserModel>?> GetFollowers()
         {
             var user = await _DalService.GetRandomUserAsync();
 
             var result = await _DalService.GetUserWithAsync(user.PublicId.ToString());
 
-            _DalService.CheckForThrow(result.Error);
-
-            return result.Value.Followers.ToModelList();
+            return result?.Followers.ToModelList();
         }
 
         [HttpGet("Following")]
-        public async Task<List<UserModel>> GetFollowing()
+        public async Task<List<UserModel>?> GetFollowing()
         {
             var user = await _DalService.GetRandomUserAsync();
 
             var result = await _DalService.GetUserWithAsync(user.PublicId.ToString());
 
-            _DalService.CheckForThrow(result.Error);
-
-            return result.Value.Following.ToModelList();
+            return result?.Following.ToModelList();
         }
 
 
         [HttpGet("All")]
-        public async Task<List<UserModel>> GetAllBy()
+        public async Task<List<UserModel>?> GetAllBy()
         {
             var result = await _DalService.GetAllByAsync();
 
-            return result.ToModelList();
+            return result?.ToModelList();
         }
 
         [HttpPut]
         public async Task<Guid> UpdateAsync()
         {
             var user = await _DalService.GetRandomUserAsync();
+
+            if (user == null)
+                return Guid.Empty;
 
             var toUpdate = Faker.Company.CatchPhrase();
 
@@ -122,7 +108,7 @@ namespace Template.Controllers
         }
 
         [HttpPut("SubscribeTo")]
-        public async Task<bool> Subscribe()
+        public async Task<UserEntity?> Subscribe()
         {
             var user1 = await _DalService.GetRandomUserAsync();
 
@@ -130,18 +116,19 @@ namespace Template.Controllers
 
             var response = await _DalService.SubscribeToAsync(user1.PublicId.ToString(), user2.PublicId.ToString());
 
-            return response.IsSuccess;
+            return response;
         }
 
 
         [HttpDelete("Delete")]
-        public async Task<HttpStatusCode> DeleteAsync()
+        public async Task<bool> DeleteAsync()
         {
             var user = await _DalService.GetRandomUserAsync();
 
-            var code = await _DalService.DeleteManagerAsync(ClassType.User, user.PublicId.ToString());
+            if (user == null)
+                return false;
 
-            return code;
+            return await _DalService.DeleteManagerAsync(ClassType.User, user.PublicId.ToString());
         }
     }
 }

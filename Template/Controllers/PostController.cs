@@ -42,29 +42,26 @@ namespace Template.Controllers
 
             var result = await _DalService.GetPostByAsync(post.PublicId.ToString());
 
-            _DalService.CheckForThrow(result.Error);
 
-            return result.Value.ToModel();
+            return result.ToModel();
         }
 
         [HttpGet("LikedList")]
-        public async Task<List<UserModel>> GetFollowers()
+        public async Task<List<UserModel>?> GetFollowers()
         {
             var post = await _DalService.GetRandomPostAsync();
 
             var result = await _DalService.GetPostWithAsync(post.PublicId.ToString());
 
-            _DalService.CheckForThrow(result.Error);
-
-            return result.Value.Likes.ToModelList();
+            return result?.Likes.ToModelList();
         }
 
         [HttpGet("All")]
-        public async Task<List<PostModel>> GetAllPostsBy()
+        public async Task<List<PostModel>?> GetAllPostsBy()
         {
             var result = await _DalService.GetAllPostsByAsync();
 
-            return result.ToModelList();
+            return result?.ToModelList();
         }
 
         [HttpPut]
@@ -72,15 +69,16 @@ namespace Template.Controllers
         {
             var post = await _DalService.GetRandomPostAsync();
 
+            if(post == null)
+                return Guid.Empty;
+
             var description = Faker.Company.CatchPhrase();
 
-            var response = await _DalService.UpdateManagerAsync(ClassType.Post, post.PublicId.ToString(), description);
-
-            return response;
+            return await _DalService.UpdateManagerAsync(ClassType.Post, post.PublicId.ToString(), description);
         }
 
         [HttpPut("Like")]
-        public async Task<PostModel> Like()
+        public async Task<PostModel?> Like()
         {
             var user = await _DalService.GetRandomUserAsync();
 
@@ -88,18 +86,16 @@ namespace Template.Controllers
 
             var response = await _DalService.LikePostAsync(user.PublicId.ToString(), post.PublicId.ToString());
 
-            return response.Value.ToModel();
+            return response?.ToModel();
         }
 
 
         [HttpDelete("Delete")]
-        public async Task<HttpStatusCode> DeletePostAsync()
+        public async Task<bool> DeletePostAsync()
         {
             var post = await _DalService.GetRandomPostAsync();
 
-            var code = await _DalService.DeleteManagerAsync(ClassType.Post, post.PublicId.ToString());
-
-            return code;
+            return await _DalService.DeleteManagerAsync(ClassType.Post, post.PublicId.ToString());
         }
     }
 }
