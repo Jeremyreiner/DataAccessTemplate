@@ -29,7 +29,7 @@ namespace Template.Controllers
                 Description = Faker.Lorem.Sentence(),
                 CreatedOnDt = DateTime.Now,
                 Likes = 0
-            };
+            }; 
             var result = await _DalService.CreatorManagerAsync(ClassType.Post, post);
 
             return result;
